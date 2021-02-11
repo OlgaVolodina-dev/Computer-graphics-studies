@@ -19,6 +19,10 @@ void ShaderProgram::SimpleShaderFrag(std::string& data) {
 	;
 }
 
+void ShaderProgram::Use() {
+	glUseProgram(program_);
+}
+
 GLuint  ShaderProgram::CompileShader(std::string& data, GLenum shader_t) {
 	struct StringHelper {
 		const char* p;

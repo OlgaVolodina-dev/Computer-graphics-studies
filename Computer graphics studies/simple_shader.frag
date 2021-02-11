@@ -1,10 +1,11 @@
 R"(#version 330 core
 out vec4 FragColor;
   
-in vec3 ourColor;
+uniform sampler2D texture1;
 
+in vec2 TexCoord;
 void main()
 {
-    FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    FragColor = texture(texture1, TexCoord);
 }
 )"

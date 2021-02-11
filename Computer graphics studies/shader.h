@@ -19,6 +19,7 @@ class ShaderProgram
 {
 public:
 	ShaderProgram(SHADERS_OPTIONS, SHADERS_OPTIONS);
+	void Use();
 	operator GLuint() { return program_; };
 private:
 	static void SimpleShaderVert(std::string& data);
