@@ -2,14 +2,18 @@
 #ifndef CUBE_H
 #define CUBE_H
 #include "GL/glew.h"
+#include "texture.h"
+#include "shader.h"
+#include "camera.h"
 class Cube
 {
 public:
 	Cube();
-	GLuint VAO = 0U;
+	void Draw(const Camera& camera);
 private:
-    
-	GLuint VBO = 0;
+	GLuint VAO = 0U;
+	ShaderProgram shader_;
+	Texture texture_;
 };
 
 

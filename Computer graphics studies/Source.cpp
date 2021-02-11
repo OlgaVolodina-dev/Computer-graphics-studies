@@ -1,17 +1,15 @@
-#include "GL/glew.h"
+#include "GL/glew.h"`
 #include <GLFW/glfw3.h>
-#include "cube.h"
-#include "shader.h"
 #include <iostream>
-#include "texture.h"
-#include "camera.h"
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "engine.h"
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-Camera camera{true};
+Engine& GetEngine()
+{
+    static Engine engine;
+    return engine;
+}
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -19,14 +17,14 @@ void processInput(GLFWwindow* window)
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.ProcessKeyboard(Camera::FORWARD);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::FORWARD);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(Camera::BACKWARD);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::BACKWARD);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(Camera::LEFT);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::LEFT);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(Camera::RIGHT);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::RIGHT);
 }
 
 float lastX = 400, lastY = 300;
@@ -55,7 +53,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     //    pitch = 89.0f;
     //if (pitch < -89.0f)
     //    pitch = -89.0f;
-    camera.ProcessMouse(pitch, yaw);
+    GetEngine().GetCamera().ProcessMouse(pitch, yaw);
 }
 
 
@@ -67,6 +65,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
+
+
 
 int main()
 {
@@ -93,11 +93,6 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     GLenum err = glewInit();
 
-
-    ShaderProgram simpleShader(SIMPLE_VERT, SIMPLE_FRAG);
-    Cube cube{};
-    Texture cube_texture("container.jpg");
-
     while (!glfwWindowShouldClose(window))
     {
         // input
@@ -106,14 +101,8 @@ int main()
         
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(simpleShader);
-        glBindVertexArray(cube.VAO);
-        cube_texture.Use();
-        camera.BindView(simpleShader);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        
+        GetEngine().Draw();
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
