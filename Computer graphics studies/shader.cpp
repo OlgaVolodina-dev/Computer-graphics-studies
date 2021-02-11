@@ -3,21 +3,36 @@
 
 std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
 	{SHADERS_OPTIONS::SIMPLE_VERT, &ShaderProgram::SimpleShaderVert},
-	{SHADERS_OPTIONS::SIMPLE_FRAG, &ShaderProgram::SimpleShaderFrag}
+	{SHADERS_OPTIONS::SIMPLE_FRAG, &ShaderProgram::SimpleShaderFrag},
+	{SHADERS_OPTIONS::PHONG_VERT, &ShaderProgram::PhongShaderVert},
+	{SHADERS_OPTIONS::PHONG_FRAG, &ShaderProgram::PhongShaderFrag}
 } };
 
 
 void ShaderProgram::SimpleShaderVert(std::string& data) {
 	data =
-#include "simple_shader.vert"
+#include "simple.vert"
 	;
 }
 
 void ShaderProgram::SimpleShaderFrag(std::string& data) {
 	data =
-#include "simple_shader.frag"
+#include "simple.frag"
 	;
 }
+
+void ShaderProgram::PhongShaderVert(std::string& data) {
+	data =
+#include "phong.vert"
+		;
+}
+
+void ShaderProgram::PhongShaderFrag(std::string& data) {
+	data =
+#include "phong.frag"
+		;
+}
+
 
 void ShaderProgram::Use() {
 	glUseProgram(program_);

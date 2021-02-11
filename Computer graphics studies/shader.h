@@ -10,7 +10,9 @@
 
 enum SHADERS_OPTIONS {
 	SIMPLE_VERT = 0,
-	SIMPLE_FRAG
+	SIMPLE_FRAG, 
+	PHONG_VERT,
+	PHONG_FRAG
 };
 
 
@@ -24,6 +26,8 @@ public:
 private:
 	static void SimpleShaderVert(std::string& data);
 	static void SimpleShaderFrag(std::string& data);
+	static void PhongShaderVert(std::string& data);
+	static void PhongShaderFrag(std::string& data);
 	static std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> shaderSourceHandler_;
 	GLuint CompileShader(std::string&, GLenum);
 	GLuint program_ = 0;

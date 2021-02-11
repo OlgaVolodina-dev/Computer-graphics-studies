@@ -16,17 +16,19 @@ Camera::Camera():
 
 Camera::~Camera()
 {}
+
 //TODO matrix in stuct
 void Camera::SetData(std::size_t offset)
 {
 	Resolve();
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::mat4), glm::value_ptr(view_));
 	glBufferSubData(GL_UNIFORM_BUFFER, offset + sizeof(glm::mat4), sizeof(glm::mat4), glm::value_ptr(projection_));
+	glBufferSubData(GL_UNIFORM_BUFFER, offset + sizeof(glm::mat4) * 2, sizeof(glm::vec4), glm::value_ptr(position_));
 }
 
 std::size_t Camera::GetUBOSize()
 {
-	return sizeof(glm::mat4) * 2;
+	return sizeof(glm::mat4) * 2 + sizeof(glm::vec4);
 }
 
 void Camera::Resolve()

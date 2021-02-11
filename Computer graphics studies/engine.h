@@ -5,6 +5,7 @@
 #include "cube.h"
 #include "UBO.h"
 #include "lightSource.h"
+#include "terrain.h"
 class Engine
 {
 public:
@@ -17,6 +18,7 @@ private:
 	Camera camera_;
 	UBO globalUBO_;
 	std::vector<LightSource> lightSources_;
+	Terrain terrain_;
 };
 
 #endif

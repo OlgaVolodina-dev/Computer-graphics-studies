@@ -4,7 +4,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 Cube::Cube():
-    shader_(SIMPLE_VERT, SIMPLE_FRAG),
+    shader_(PHONG_VERT, PHONG_FRAG),
     texture_("container.jpg")
 {
     const float vertices[] = {
