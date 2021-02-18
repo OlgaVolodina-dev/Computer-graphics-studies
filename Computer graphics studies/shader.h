@@ -12,7 +12,12 @@ enum SHADERS_OPTIONS {
 	SIMPLE_VERT = 0,
 	SIMPLE_FRAG, 
 	PHONG_VERT,
-	PHONG_FRAG
+	PHONG_FRAG,
+	TESSELATION_VERT,
+	TESSELATION_FRAG,
+	TESSELATION_TES, 
+	TESSELATION_TC 
+
 };
 
 
@@ -21,6 +26,7 @@ class ShaderProgram
 {
 public:
 	ShaderProgram(SHADERS_OPTIONS, SHADERS_OPTIONS);
+	ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS TC, SHADERS_OPTIONS TES, SHADERS_OPTIONS fragment_shader);
 	void Use();
 	operator GLuint() { return program_; };
 private:
@@ -28,6 +34,10 @@ private:
 	static void SimpleShaderFrag(std::string& data);
 	static void PhongShaderVert(std::string& data);
 	static void PhongShaderFrag(std::string& data);
+	static void TesselationVert(std::string& data);
+	static void TesselationFrag(std::string& data);
+	static void TesselationTES(std::string& data);
+	static void TesselationTC(std::string& data);
 	static std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> shaderSourceHandler_;
 	GLuint CompileShader(std::string&, GLenum);
 	GLuint program_ = 0;

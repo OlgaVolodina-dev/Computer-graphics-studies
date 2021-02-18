@@ -5,6 +5,7 @@
 class Texture
 {
 public:
+
 	Texture(std::string);
 	void Use(unsigned int active = 0);
 private:
