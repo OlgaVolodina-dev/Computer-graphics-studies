@@ -13,7 +13,8 @@ layout(std140, binding = 2) uniform GlobalMatrices
     vec4 attenuation1;
     vec4 lightSource2;
     vec4 attenuation2;
-    mat4 lighSpaceMatrix;
+    mat4 lightSpaceMatrix;
+    vec4 lightDir;
 };
 
 out vec2 TexCoord;
@@ -27,7 +28,7 @@ void main()
     gl_Position = projection * view * modelTransform * vec4(aPos, 1.0);
     FragPos = vec3(modelTransform * vec4(aPos, 1.0));
     TexCoord = aTexCoord;
-    FragLightPos = lighSpaceMatrix * vec4(aPos, 1.0);
+    FragLightPos = lightSpaceMatrix * vec4(FragPos, 1.0);
     Normal = mat3(transpose(inverse(modelTransform))) * aNormal;
 }
 )"

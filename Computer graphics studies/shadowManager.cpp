@@ -39,6 +39,7 @@ void ShadowManager::SetDirectionalLight()
 		//glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 	glm::vec3 position = glm::vec3(0.0f, 5.0f, 5.0f);
 	glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f);
+	direction_ = position - direction;
 	glm::vec3 up = -glm::cross(glm::vec3(1.0, 0.0, 0.0),  position-direction);
 	glm::mat4 lightView = glm::lookAt(position,
 		direction,
@@ -52,12 +53,13 @@ void ShadowManager::SetDirectionalLight()
 
 std::size_t ShadowManager::GetUBOSize()
 {
-	return sizeof(glm::mat4);
+	return sizeof(glm::mat4) + sizeof(glm::vec3);
 }
 
 void ShadowManager::SetData(std::size_t offset) 
 {
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix_));
+	glBufferSubData(GL_UNIFORM_BUFFER, offset + sizeof(glm::mat4), sizeof(glm::vec3), glm::value_ptr(direction_));
 }
 
 GLuint ShadowManager::GetDepthTexture()

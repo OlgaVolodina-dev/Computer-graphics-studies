@@ -8,13 +8,14 @@ layout(std140, binding = 2) uniform GlobalMatrices
     vec4 attenuation1;
     vec4 lightSource2;
     vec4 attenuation2;
-    mat4 lighSpaceMatrix;
+    mat4 lightSpaceMatrix;
+    vec4 lightDir;
 };
 
 out vec4 FragColor;
   
 layout(binding=0) uniform sampler2D texture1;
-layout(binding=1) uniform sampler2D depthMap;
+layout(binding=2) uniform sampler2D depthMap;
 
 in vec3 FragPos;
 in vec2 TexCoord;
@@ -55,7 +56,7 @@ void main()
     vec3 result2 = CalcLight(lightSource2, attenuation2);
     
     vec3 lightDepth = FragLightPos.xyz / FragLightPos.w * 0.5 + 0.5;
-    if (lightDepth.z > texture(depthMap, lightDepth.xy).r) {
+    if (lightDepth.z - 0.005 > texture(depthMap, lightDepth.xy).r) {
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     } else {
 

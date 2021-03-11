@@ -9,7 +9,7 @@ in vec2 FragTexPos;
 in vec3 FragPos;
 in vec4 FragLightPos;
 
-layout(std140, binding = 0) uniform GlobalMatrices
+layout(std140, binding = 2) uniform GlobalMatrices
 {
     mat4 view;
     mat4 projection;
@@ -19,6 +19,7 @@ layout(std140, binding = 0) uniform GlobalMatrices
     vec4 lightSource2;
     vec4 attenuation2;
     mat4 lightSpaceMatrix;
+    vec4 lightDir;
 };
 
 
@@ -54,6 +55,7 @@ void main()
     
     vec3 result1 = CalcLight(lightSource1, attenuation1);
     vec3 result2 = CalcLight(lightSource2, attenuation2);
+    
 
     vec3 lightDepth = FragLightPos.xyz / FragLightPos.w * 0.5 + 0.5;
     if (lightDepth.x < 0.0 || lightDepth.x > 1.0 || lightDepth.y < 0.0 || lightDepth.y > 1.0) {
@@ -62,7 +64,7 @@ void main()
         FragColor = vec4(1.0, 0.0, 0.0, 1.0);
     } else {
         FragColor = vec4(result1 + result2 , 1.0);
-        //FragColor = vec4(texture(depthMap, FragTexPos).r);
+        
     }
 }
 )"
