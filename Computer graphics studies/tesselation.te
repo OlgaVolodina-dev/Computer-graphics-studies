@@ -36,7 +36,7 @@ void main()
 	vec3 p1 = gl_TessCoord.y * gl_in[1].gl_Position.xyz;
 	vec3 p2 = gl_TessCoord.z * gl_in[2].gl_Position.xyz;
     vec3 result = p0 + p1 + p2;
-    //result.y = result.y + height ;
+    result.y = result.y + height ;
     FragPos = vec3(TESModelTransform[0] * vec4(result, 1.0));
     FragLightPos = lightSpaceMatrix * vec4(FragPos, 1.0);
     gl_Position =  projection * view * TESModelTransform[0] * vec4(result, 1.0);
