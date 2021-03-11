@@ -3,17 +3,20 @@
 #include <iostream>
 Terrain::Terrain():
 	color_(glm::vec3(0.25, 0.47, 0.29)),
-	position_(glm::vec3(0.0, -1.0, 0.0)),
+	position_(glm::vec3(0.0, -5.0, 0.0)),
 	shader_(TESSELATION_VERT, TESSELATION_TC, TESSELATION_TES, TESSELATION_FRAG), 
-	heightmap_("heightmap.png")
+	simpleShader_(SIMPLE_VERT, SIMPLE_FRAG),
+	heightmap_("heightmap.png"),
+	colormap_("Terrain-Colormap.png")
+	
 {
 	const float vertices[] = {
-		-1.0, 0.0, -1.0, 0.0, 0.0,
 		1.0, 0.0, -1.0, 1.0, 0.0, 
 		1.0, 0.0, 1.0, 1.0, 1.0,
-
 		-1.0, 0.0, -1.0, 0.0, 0.0,
+
 		1.0, 0.0, 1.0, 1.0, 1.0,
+		-1.0, 0.0, -1.0, 0.0, 0.0,
 		-1.0, 0.0, 1.0, 0.0, 1.0
 	};
 	glGenVertexArrays(1, &VAO_);
@@ -45,17 +48,23 @@ Terrain::Terrain():
 		glEnableVertexAttribArray(i + 3);
 		glVertexAttribDivisor(i + 3, 1);
 	}
-	GLint offset;
-	glGetIntegerv(GL_MAX_PROGRAM_TEXEL_OFFSET, &offset);
-	std::cout << offset << std::endl;
 	glUniformBlockBinding(shader_, 0U, 0U);
+	glUniformBlockBinding(simpleShader_, 0U, 0U);
+
 }
 
+void Terrain::DrawSimple()
+{
+	glUseProgram(simpleShader_);
+	glBindVertexArray(VAO_);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
 
 void Terrain::Draw()
 {
 	glUseProgram(shader_);
 	heightmap_.Use();
+	colormap_.Use(1);
 	glBindVertexArray(VAO_);
 	glUniform3fv(glGetUniformLocation(shader_, "aColor"), 1, glm::value_ptr(color_));
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

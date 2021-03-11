@@ -4,7 +4,7 @@ layout (location = 1) in vec2 aTexCoord;
 layout (location = 2) in vec3 aNormal;
 layout (location = 3) in mat4 modelTransform;
 
-layout(std140, binding = 0) uniform GlobalMatrices
+layout(std140, binding = 2) uniform GlobalMatrices
 {
     mat4 view;
     mat4 projection;
@@ -13,11 +13,13 @@ layout(std140, binding = 0) uniform GlobalMatrices
     vec4 attenuation1;
     vec4 lightSource2;
     vec4 attenuation2;
+    mat4 lighSpaceMatrix;
 };
 
 out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
+out vec4 FragLightPos;
 
 void main()
 {
@@ -25,6 +27,7 @@ void main()
     gl_Position = projection * view * modelTransform * vec4(aPos, 1.0);
     FragPos = vec3(modelTransform * vec4(aPos, 1.0));
     TexCoord = aTexCoord;
+    FragLightPos = lighSpaceMatrix * vec4(aPos, 1.0);
     Normal = mat3(transpose(inverse(modelTransform))) * aNormal;
 }
 )"

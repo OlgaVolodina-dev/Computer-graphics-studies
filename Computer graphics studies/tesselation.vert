@@ -5,6 +5,7 @@ layout (location = 3) in mat4 modelTransform;
 
 out mat4 TCModelTransform;
 out vec2 TCTexPos;
+
 void main()
 {
     TCTexPos = texPos;

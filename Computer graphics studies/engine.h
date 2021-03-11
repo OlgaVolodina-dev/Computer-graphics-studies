@@ -6,6 +6,8 @@
 #include "UBO.h"
 #include "lightSource.h"
 #include "terrain.h"
+#include "shadowManager.h"
+
 class Engine
 {
 public:
@@ -19,6 +21,7 @@ private:
 	UBO globalUBO_;
 	std::vector<LightSource> lightSources_;
 	Terrain terrain_;
+	ShadowManager shadowManager_;
 };
 
 #endif

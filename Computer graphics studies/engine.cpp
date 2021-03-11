@@ -5,7 +5,8 @@ Engine::Engine():
 	cube_(),
 	camera_(),
 	globalUBO_(), 
-	terrain_()
+	terrain_(), 
+	shadowManager_()
 {
 	// Order matters!
 	globalUBO_.RegisterListener(camera_);
@@ -15,6 +16,8 @@ Engine::Engine():
 	for (auto& lightSource : lightSources_) {
 		globalUBO_.RegisterListener(lightSource);
 	}
+	globalUBO_.RegisterListener(shadowManager_);
+
 	globalUBO_.Setup();
 
 }
@@ -22,10 +25,20 @@ Engine::Engine():
 
 void Engine::Draw()
 {
-	globalUBO_.UpdateUBO();
-	glClearColor(0.05f, 0.15f, 0.26f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.05f, 0.15f, 0.26f, 1.0f);
+
+	shadowManager_.SetDirectionalLight();
+	std::vector<Object*> objects;
+	objects.push_back(&terrain_);
+	objects.push_back(&cube_);
+	shadowManager_.ShadowPrepass(objects);
+
+	globalUBO_.UpdateUBO();
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetDepthTexture());
 	cube_.Draw(camera_);
 	terrain_.Draw();
 	for (auto& lightSource : lightSources_) {

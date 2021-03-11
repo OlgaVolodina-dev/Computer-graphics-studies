@@ -5,7 +5,8 @@
 
 Cube::Cube():
     shader_(PHONG_VERT, PHONG_FRAG),
-    texture_("container.jpg")
+    simpleShader_(SIMPLE_VERT, SIMPLE_FRAG),
+    texture_("container.jpg") 
 {
     const float vertices[] = {
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f, 0.0f, -1.0f,
@@ -98,8 +99,16 @@ Cube::Cube():
         glEnableVertexAttribArray(i + 3);
         glVertexAttribDivisor(i + 3, 1);
     }
-    //dirty for gloabl UBO
+    //dirty for gloabal UBO
     glUniformBlockBinding(shader_, 0U, 0U);
+    glUniformBlockBinding(simpleShader_, 0U, 0U);
+}
+
+void Cube::DrawSimple()
+{
+    glUseProgram(simpleShader_);
+    glBindVertexArray(VAO);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 10);
 }
 
 void Cube::Draw(const Camera& camera)

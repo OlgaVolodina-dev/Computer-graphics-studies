@@ -106,6 +106,7 @@ ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS frag
 	{
 		glGetProgramInfoLog(program_, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+		std::cout << vertex_data << std::endl;
 	}
 
 	glDeleteShader(vertex);

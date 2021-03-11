@@ -32,7 +32,10 @@ void UBO::RegisterListener(IUBOListener& listener)
 
 void UBO::UpdateUBO()
 {
+
 	glBindBuffer(GL_UNIFORM_BUFFER, buffer_);
+	glBindBufferRange(GL_UNIFORM_BUFFER, bindingIndex_,
+		buffer_, 0, size_);
 	std::size_t offset = 0;
 	for (auto& listener : listeners_) {
 		listener->SetData(offset);

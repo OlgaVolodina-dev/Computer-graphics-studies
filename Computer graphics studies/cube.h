@@ -5,14 +5,17 @@
 #include "texture.h"
 #include "shader.h"
 #include "camera.h"
-class Cube
+#include "shadowManager.h"
+class Cube : public Object
 {
 public:
 	Cube();
 	void Draw(const Camera& camera);
+	void DrawSimple();
 private:
 	GLuint VAO = 0U;
 	ShaderProgram shader_;
+	ShaderProgram simpleShader_;
 	Texture texture_;
 };
 
