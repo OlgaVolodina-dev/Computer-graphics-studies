@@ -22,7 +22,7 @@ private:
 	glm::vec3 color_;
 	glm::vec3 position_;
 	ShaderProgram shader_;
-	ShaderProgram simpleShader_;
+	ShaderProgram depthPassShader_;
 	Texture heightmap_;
 	Texture colormap_;
 

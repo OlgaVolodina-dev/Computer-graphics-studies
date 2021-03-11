@@ -9,8 +9,23 @@ std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSo
 	{SHADERS_OPTIONS::TESSELATION_TC, &ShaderProgram::TesselationTC},
 	{SHADERS_OPTIONS::TESSELATION_FRAG, &ShaderProgram::TesselationFrag},
 	{SHADERS_OPTIONS::PHONG_VERT, &ShaderProgram::PhongShaderVert},
-	{SHADERS_OPTIONS::PHONG_FRAG, &ShaderProgram::PhongShaderFrag}
+	{SHADERS_OPTIONS::PHONG_FRAG, &ShaderProgram::PhongShaderFrag}, 
+	{SHADERS_OPTIONS::DEPTH_PASS_VERT, &ShaderProgram::DepthPassShaderVert}, 
+	{SHADERS_OPTIONS::DEPTH_PASS_FRAG, &ShaderProgram::DepthPassShaderFrag}, 
+
 } };
+
+void ShaderProgram::DepthPassShaderVert(std::string& data) {
+	data =
+#include "depth.vert"
+		;
+}
+
+void ShaderProgram::DepthPassShaderFrag(std::string& data) {
+	data =
+#include "depth.frag"
+		;
+}
 
 void ShaderProgram::TesselationVert(std::string& data) {
 	data =

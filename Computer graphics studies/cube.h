@@ -15,7 +15,7 @@ public:
 private:
 	GLuint VAO = 0U;
 	ShaderProgram shader_;
-	ShaderProgram simpleShader_;
+	ShaderProgram depthPassShader_;
 	Texture texture_;
 };
 

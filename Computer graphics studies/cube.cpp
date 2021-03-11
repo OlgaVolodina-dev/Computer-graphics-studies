@@ -5,7 +5,7 @@
 
 Cube::Cube():
     shader_(PHONG_VERT, PHONG_FRAG),
-    simpleShader_(SIMPLE_VERT, SIMPLE_FRAG),
+    depthPassShader_(DEPTH_PASS_VERT, DEPTH_PASS_FRAG),
     texture_("container.jpg") 
 {
     const float vertices[] = {
@@ -101,12 +101,12 @@ Cube::Cube():
     }
     //dirty for gloabal UBO
     glUniformBlockBinding(shader_, 0U, 0U);
-    glUniformBlockBinding(simpleShader_, 0U, 0U);
+    glUniformBlockBinding(depthPassShader_, 0U, 0U);
 }
 
 void Cube::DrawSimple()
 {
-    glUseProgram(simpleShader_);
+    glUseProgram(depthPassShader_);
     glBindVertexArray(VAO);
     glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 10);
 }

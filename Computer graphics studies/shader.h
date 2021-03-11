@@ -16,7 +16,9 @@ enum SHADERS_OPTIONS {
 	TESSELATION_VERT,
 	TESSELATION_FRAG,
 	TESSELATION_TES, 
-	TESSELATION_TC 
+	TESSELATION_TC , 
+	DEPTH_PASS_VERT,
+	DEPTH_PASS_FRAG
 
 };
 
@@ -30,6 +32,9 @@ public:
 	void Use();
 	operator GLuint() { return program_; };
 private:
+
+	static void DepthPassShaderVert(std::string& data);
+	static void DepthPassShaderFrag(std::string& data);
 	static void SimpleShaderVert(std::string& data);
 	static void SimpleShaderFrag(std::string& data);
 	static void PhongShaderVert(std::string& data);

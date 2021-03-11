@@ -5,7 +5,7 @@ Terrain::Terrain():
 	color_(glm::vec3(0.25, 0.47, 0.29)),
 	position_(glm::vec3(0.0, -5.0, 0.0)),
 	shader_(TESSELATION_VERT, TESSELATION_TC, TESSELATION_TES, TESSELATION_FRAG), 
-	simpleShader_(SIMPLE_VERT, SIMPLE_FRAG),
+	depthPassShader_(DEPTH_PASS_VERT, DEPTH_PASS_FRAG),
 	heightmap_("heightmap.png"),
 	colormap_("Terrain-Colormap.png")
 	
@@ -49,13 +49,13 @@ Terrain::Terrain():
 		glVertexAttribDivisor(i + 3, 1);
 	}
 	glUniformBlockBinding(shader_, 0U, 0U);
-	glUniformBlockBinding(simpleShader_, 0U, 0U);
+	glUniformBlockBinding(depthPassShader_, 0U, 0U);
 
 }
 
 void Terrain::DrawSimple()
 {
-	glUseProgram(simpleShader_);
+	glUseProgram(depthPassShader_);
 	glBindVertexArray(VAO_);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
