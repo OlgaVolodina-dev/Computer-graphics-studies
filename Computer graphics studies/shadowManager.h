@@ -24,12 +24,14 @@ public:
 	void SetDirectionalLight();
 	void ShadowPrepass(std::vector<Object *> &, bool);
 	GLuint GetDepthTexture();
+	GLuint GetVSMTexture() { return vsmTexture_; }
 	std::size_t GetUBOSize() override;
 	void SetData(std::size_t offset) override;
 private:
 	GLuint UBO_;
 	glm::mat4 lightSpaceMatrix_;
 	GLuint depthTexture_;
+	GLuint vsmTexture_;
 	GLuint depthFBO_;
 	glm::vec3 direction_;
 };

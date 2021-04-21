@@ -7,15 +7,27 @@ ShadowManager::ShadowManager()
 	glGenFramebuffers(1, &depthFBO_);
 	const unsigned int SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
 
+	glGenTextures(1, &vsmTexture_);
+	glBindTexture(GL_TEXTURE_2D, vsmTexture_);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F,
+		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+
+
 	glGenTextures(1, &depthTexture_);
 	glBindTexture(GL_TEXTURE_2D, depthTexture_);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO_);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, vsmTexture_, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture_, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -32,7 +44,7 @@ ShadowManager::ShadowManager()
 
 void ShadowManager::SetDirectionalLight()
 {
-	float near_plane = 1.0f, far_plane = 30.0f;
+	float near_plane = 5.0f, far_plane = 30.0f;
 	glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, near_plane, far_plane);
 		//glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 	glm::vec3 position = glm::vec3(0.0f, 5.0f, 5.0f);
@@ -68,6 +80,7 @@ GLuint ShadowManager::GetDepthTexture()
 void ShadowManager::ShadowPrepass(std::vector<Object*>& objects, bool showDepth)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
+	
 	glBindBufferRange(GL_UNIFORM_BUFFER, 0,
 		UBO_, 0, sizeof(glm::mat4));
 	const unsigned int SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
@@ -81,7 +94,7 @@ void ShadowManager::ShadowPrepass(std::vector<Object*>& objects, bool showDepth)
 		object->DrawSimple();
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+	glGenerateTextureMipmap(vsmTexture_);
 }
 
 
