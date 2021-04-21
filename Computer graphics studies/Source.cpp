@@ -25,6 +25,10 @@ void processInput(GLFWwindow* window)
         GetEngine().GetCamera().ProcessKeyboard(Camera::LEFT);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         GetEngine().GetCamera().ProcessKeyboard(Camera::RIGHT);
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+        GetEngine().ShowDepth(true);
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+        GetEngine().ShowDepth(false);
 }
 
 float lastX = 400, lastY = 300;

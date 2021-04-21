@@ -22,7 +22,7 @@ class ShadowManager final : public IUBOListener
 public:
 	ShadowManager();
 	void SetDirectionalLight();
-	void ShadowPrepass(std::vector<Object *> &);
+	void ShadowPrepass(std::vector<Object *> &, bool);
 	GLuint GetDepthTexture();
 	std::size_t GetUBOSize() override;
 	void SetData(std::size_t offset) override;

@@ -17,8 +17,6 @@ ShadowManager::ShadowManager()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO_);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture_, 0);
-	glDrawBuffer(GL_NONE);
-	//glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
@@ -35,7 +33,7 @@ ShadowManager::ShadowManager()
 void ShadowManager::SetDirectionalLight()
 {
 	float near_plane = 1.0f, far_plane = 30.0f;
-	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+	glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, near_plane, far_plane);
 		//glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 	glm::vec3 position = glm::vec3(0.0f, 5.0f, 5.0f);
 	glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -67,20 +65,23 @@ GLuint ShadowManager::GetDepthTexture()
 	return depthTexture_;
 }
 
-void ShadowManager::ShadowPrepass(std::vector<Object*>& objects)
+void ShadowManager::ShadowPrepass(std::vector<Object*>& objects, bool showDepth)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
 	glBindBufferRange(GL_UNIFORM_BUFFER, 0,
 		UBO_, 0, sizeof(glm::mat4));
 	const unsigned int SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO_);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	GLint fbo = showDepth ? 0 : depthFBO_;
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (auto object : objects) {
 		object->DrawSimple();
 	}
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 

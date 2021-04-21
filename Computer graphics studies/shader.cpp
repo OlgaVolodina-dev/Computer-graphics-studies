@@ -4,10 +4,6 @@
 std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
 	{SHADERS_OPTIONS::SIMPLE_VERT, &ShaderProgram::SimpleShaderVert},
 	{SHADERS_OPTIONS::SIMPLE_FRAG, &ShaderProgram::SimpleShaderFrag},
-	{SHADERS_OPTIONS::TESSELATION_VERT, &ShaderProgram::TesselationVert},
-	{SHADERS_OPTIONS::TESSELATION_TES, &ShaderProgram::TesselationTES},
-	{SHADERS_OPTIONS::TESSELATION_TC, &ShaderProgram::TesselationTC},
-	{SHADERS_OPTIONS::TESSELATION_FRAG, &ShaderProgram::TesselationFrag},
 	{SHADERS_OPTIONS::PHONG_VERT, &ShaderProgram::PhongShaderVert},
 	{SHADERS_OPTIONS::PHONG_FRAG, &ShaderProgram::PhongShaderFrag}, 
 	{SHADERS_OPTIONS::DEPTH_PASS_VERT, &ShaderProgram::DepthPassShaderVert}, 
@@ -25,30 +21,6 @@ void ShaderProgram::DepthPassShaderFrag(std::string& data) {
 	data =
 #include "depth.frag"
 		;
-}
-
-void ShaderProgram::TesselationVert(std::string& data) {
-	data =
-#include "tesselation.vert"
-		;
-}
-
-void ShaderProgram::TesselationFrag(std::string& data) {
-	data =
-#include "tesselation.frag"
-		;
-}
-
-void ShaderProgram::TesselationTES(std::string& data) {
-	data =
-#include "tesselation.te"
-	;
-}
-
-void ShaderProgram::TesselationTC(std::string& data) {
-	data =
-#include "tesselation.tc"
-	;
 }
 
 void ShaderProgram::SimpleShaderVert(std::string& data) {

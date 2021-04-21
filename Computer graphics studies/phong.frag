@@ -33,7 +33,7 @@ vec3 CalcLight(vec4 lightSource, vec4 attenuation) {
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(vec3(lightSource) - FragPos); 
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor;
+    vec3 diffuse =  diff * lightColor;
 
     float specularStrength = 0.5;
     vec3 viewDir = normalize(vec3(cameraPos) - FragPos);
@@ -71,14 +71,24 @@ vec3 CalcDirectionalLight(vec3 lightDir)
     return result;
 }
 
+
 void main()
 {
     vec3 result1 = CalcLight(lightSource1, attenuation1);
     vec3 result2 = CalcLight(lightSource2, attenuation2);
-    vec3 result3 = 0.1 * CalcDirectionalLight(vec3(lightDir));
-
-     vec3 lightDepth = FragLightPos.xyz / FragLightPos.w * 0.5 + 0.5;
-    float shadows = (lightDepth.z - 0.005 > texture(depthMap, lightDepth.xy).r) ? 0.3 : 1.0;
+    vec3 result3 = 0.01 * CalcDirectionalLight(vec3(lightDir));
+    float shadows = 0.0;
+    vec2 texelSize = 1.0 / textureSize(depthMap, 0);
+    vec3 lightDepth = FragLightPos.xyz / FragLightPos.w * 0.5 + 0.5;
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(depthMap, lightDepth.xy.xy + vec2(x, y) * texelSize).r; 
+            shadows += lightDepth.z - 0.005 > pcfDepth ? 0.0 : 1.0;        
+        }    
+    }
+    shadows /= 9.0;
     if (lightDepth.x < 0.0 || lightDepth.x > 1.0 || lightDepth.y < 0.0 || lightDepth.y > 1.0) {
        shadows = 1.0;
     }
