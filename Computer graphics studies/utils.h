@@ -2,6 +2,7 @@
 
 #ifndef UTILS_H
 #define UTILS_H
+#include "GL/glew.h"
 
 #define CHECK_OPENGL_ERROR() \
 {\
@@ -35,6 +36,7 @@
 
 class Utils
 {
+
 };
 
 #endif // UTILS_H

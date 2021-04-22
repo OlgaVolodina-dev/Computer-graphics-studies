@@ -1,4 +1,4 @@
-R"(#version 420 core
+R"(#version 440 core
 layout (location = 0) in vec3 aPos;
 layout (location = 3) in mat4 modelTransform;
 layout(std140, binding = 2) uniform GlobalMatrices
@@ -8,8 +8,10 @@ layout(std140, binding = 2) uniform GlobalMatrices
     vec4 cameraPos;
     vec4 lightSource1;
     vec4 attenuation1;
+    vec4 lightColor1;
     vec4 lightSource2;
     vec4 attenuation2;
+    vec4 lightColor2;
     mat4 lightSpaceMatrix;
     vec4 lightDir;
 };

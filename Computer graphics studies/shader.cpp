@@ -8,8 +8,23 @@ std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSo
 	{SHADERS_OPTIONS::PHONG_FRAG, &ShaderProgram::PhongShaderFrag}, 
 	{SHADERS_OPTIONS::DEPTH_PASS_VERT, &ShaderProgram::DepthPassShaderVert}, 
 	{SHADERS_OPTIONS::DEPTH_PASS_FRAG, &ShaderProgram::DepthPassShaderFrag}, 
+	{SHADERS_OPTIONS::QUAD_VERT, &ShaderProgram::QuadShaderVert}, 
+	{SHADERS_OPTIONS::QUAD_FRAG, &ShaderProgram::QuadShaderFrag}, 
 
 } };
+
+void ShaderProgram::QuadShaderVert(std::string& data) {
+	data =
+#include "quad.vert"
+	;
+}
+
+void ShaderProgram::QuadShaderFrag(std::string& data) {
+	data =
+#include "quad.frag"
+	;
+}
+
 
 void ShaderProgram::DepthPassShaderVert(std::string& data) {
 	data =

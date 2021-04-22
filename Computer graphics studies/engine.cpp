@@ -10,7 +10,8 @@ Engine::Engine() :
 	terrain_(),
 	camera_(),
 	globalUBO_(),
-	shadowManager_()
+	shadowManager_(),
+	quadProgram(QUAD_VERT, QUAD_FRAG)
 {
 	// Order matters!
 	globalUBO_.RegisterListener(camera_);
@@ -36,18 +37,48 @@ Engine::Engine() :
 	GLuint msaaDepth = 0;
 	glGenRenderbuffers(1, &msaaDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, msaaDepth);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT16, SCR_WIDTH, SCR_HEIGHT);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO_);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, msaaTex, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, msaaDepth);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, msaaDepth);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	CHECK_OPENGL_ERROR();
+
+	glGenTextures(1, &postProcessTex_);
+	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glGenTextures(1, &postProcessDSTex_);
+	glBindTexture(GL_TEXTURE_2D, postProcessDSTex_);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glGenFramebuffers(1, &postProcessFBO_);
+	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBO_);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessTex_, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, postProcessDSTex_, 0);
+	GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (err != GL_FRAMEBUFFER_COMPLETE) {
+		std::cout << "Incomplete";
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	CHECK_OPENGL_ERROR();
+
+	glGenVertexArrays(1, &emptyVAO_);
+
 }
 
 void Engine::Draw()
 {
+	glEnable(GL_DEPTH_TEST);
 	shadowManager_.SetDirectionalLight();
 	std::vector<Object*> objects;
 	objects.push_back(&cube_);
@@ -60,10 +91,10 @@ void Engine::Draw()
 	if (msaa_) {
 		glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO_);
 	}
-	glEnable(GL_DEPTH_TEST);
 
 	glClearColor(0.005f, 0.015f, 0.026f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	globalUBO_.UpdateUBO();
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture());
@@ -75,9 +106,18 @@ void Engine::Draw()
 
 	if (msaa_) {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, msaaFBO_);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, postProcessFBO_);
 		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST);
+	glUseProgram(quadProgram);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
+	glBindVertexArray(emptyVAO_);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
 

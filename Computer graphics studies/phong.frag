@@ -6,8 +6,10 @@ layout(std140, binding = 2) uniform GlobalMatrices
     vec4 cameraPos;
     vec4 lightSource1;
     vec4 attenuation1;
+    vec4 lightColor1;
     vec4 lightSource2;
     vec4 attenuation2;
+    vec4 lightColor2;
     mat4 lightSpaceMatrix;
     vec4 lightDir;
 };
@@ -23,7 +25,7 @@ in vec3 Normal;
 in vec4 FragLightPos;
 
 
-vec3 CalcLight(vec4 lightSource, vec4 attenuation) {
+vec3 CalcLight(vec4 lightSource, vec4 attenuation, vec4 lightCol) {
 
     vec3 lightColor = vec3(texture(texture1, TexCoord));
 
@@ -33,7 +35,7 @@ vec3 CalcLight(vec4 lightSource, vec4 attenuation) {
     vec3 norm = normalize(Normal);
     vec3 lightDir = normalize(vec3(lightSource) - FragPos); 
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse =  diff * lightColor;
+    vec3 diffuse =  lightCol.xyz * diff * lightColor;
 
     float specularStrength = 0.5;
     vec3 viewDir = normalize(vec3(cameraPos) - FragPos);
@@ -74,8 +76,8 @@ vec3 CalcDirectionalLight(vec3 lightDir)
 
 void main()
 {
-    vec3 result1 = CalcLight(lightSource1, attenuation1);
-    vec3 result2 = CalcLight(lightSource2, attenuation2);
+    vec3 result1 = CalcLight(lightSource1, attenuation1, lightColor1);
+    vec3 result2 = CalcLight(lightSource2, attenuation2,  lightColor2);
     vec3 result3 =  0.2 *CalcDirectionalLight(vec3(lightDir));
     float shadows = 0.0;
     vec3 lightDepth = FragLightPos.xyz / FragLightPos.w * 0.5 + 0.5;

@@ -18,7 +18,11 @@ public:
 private:
 	bool showDepth_ = false;
 	bool msaa_ = true;
-	GLuint msaaFBO_ = 0;
+	GLuint msaaFBO_ = 0U;
+	GLuint postProcessTex_ = 0U;
+	GLuint postProcessFBO_ = 0U;
+	GLuint postProcessDSTex_ = 0U;
+	GLuint emptyVAO_;
 	void ResolveUBO();
 	Cube cube_;
 	Terrain terrain_;
@@ -26,6 +30,7 @@ private:
 	UBO globalUBO_;
 	std::vector<LightSource> lightSources_;
 	ShadowManager shadowManager_;
+	ShaderProgram quadProgram;
 };
 
 #endif

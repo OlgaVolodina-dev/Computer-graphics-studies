@@ -18,7 +18,9 @@ enum SHADERS_OPTIONS {
 	TESSELATION_TES, 
 	TESSELATION_TC , 
 	DEPTH_PASS_VERT,
-	DEPTH_PASS_FRAG
+	DEPTH_PASS_FRAG,
+	QUAD_VERT,
+	QUAD_FRAG
 
 };
 
@@ -43,6 +45,8 @@ private:
 	static void TesselationFrag(std::string& data);
 	static void TesselationTES(std::string& data);
 	static void TesselationTC(std::string& data);
+	static void QuadShaderVert(std::string& data);
+	static void QuadShaderFrag(std::string& data);
 	static std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> shaderSourceHandler_;
 	GLuint CompileShader(std::string&, GLenum);
 	GLuint program_ = 0;

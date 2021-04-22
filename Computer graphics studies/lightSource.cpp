@@ -84,13 +84,14 @@ LightSource::LightSource(glm::vec3 position):
 
 std::size_t LightSource::GetUBOSize()
 {
-	return sizeof(glm::vec4)*2;
+	return sizeof(glm::vec4)*3;
 }
 
 void LightSource::SetData(std::size_t offset)
 {
 	glBufferSubData(GL_UNIFORM_BUFFER, offset, sizeof(glm::vec4), glm::value_ptr(position_));
 	glBufferSubData(GL_UNIFORM_BUFFER, offset+ sizeof(glm::vec4), sizeof(glm::vec4), &attenuation);
+	glBufferSubData(GL_UNIFORM_BUFFER, offset+ 2 * sizeof(glm::vec4), sizeof(glm::vec4), glm::value_ptr(lightColor_));
 }
 
 
@@ -98,6 +99,7 @@ void LightSource::Draw()
 {
     glUseProgram(shader_);
     glBindVertexArray(VAO_);
-    glUniform3fv(glGetUniformLocation(shader_, "aColor"), 1, glm::value_ptr(color_));
+    glUniform3fv(0, 1, glm::value_ptr(lightColor_));
+
     glDrawArrays(GL_TRIANGLES, 0, 36);
 }
