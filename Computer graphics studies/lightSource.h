@@ -18,7 +18,7 @@ private:
 		float linear = 0.09f;
 		float quadratic = 0.032f;
 	};
-	glm::vec3 lightColor_ = glm::vec3(0.0, 0.0, 1.0);
+	glm::vec3 lightColor_ = glm::vec3(2.0, 2.0, 2.0);
 	Attenuation attenuation;
 	glm::vec3 position_;
 	GLuint VAO_ = 0U;

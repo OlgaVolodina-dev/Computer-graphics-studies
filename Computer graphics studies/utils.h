@@ -34,6 +34,14 @@
 	}\
 }
 
+#define CHECK_FRAMEBUFFER_STATUS() \
+{\
+	GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);\
+	if (err != GL_FRAMEBUFFER_COMPLETE) { \
+		std::cout << "Incomplete"; \
+	} \
+}
+
 class Utils
 {
 

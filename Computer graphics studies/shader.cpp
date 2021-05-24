@@ -1,17 +1,32 @@
 #include "shader.h"
 #include <iostream>
 
+
 std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
 	{SHADERS_OPTIONS::SIMPLE_VERT, &ShaderProgram::SimpleShaderVert},
 	{SHADERS_OPTIONS::SIMPLE_FRAG, &ShaderProgram::SimpleShaderFrag},
 	{SHADERS_OPTIONS::PHONG_VERT, &ShaderProgram::PhongShaderVert},
 	{SHADERS_OPTIONS::PHONG_FRAG, &ShaderProgram::PhongShaderFrag}, 
+	{SHADERS_OPTIONS::BLOOM_PREPROCESSING_FRAG, &ShaderProgram::BloomPreprocessingShaderFrag}, 
+	{SHADERS_OPTIONS::BLOOM_POSTPROCESSING_FRAG, &ShaderProgram::BloomPostprocessingShaderFrag}, 
 	{SHADERS_OPTIONS::DEPTH_PASS_VERT, &ShaderProgram::DepthPassShaderVert}, 
 	{SHADERS_OPTIONS::DEPTH_PASS_FRAG, &ShaderProgram::DepthPassShaderFrag}, 
 	{SHADERS_OPTIONS::QUAD_VERT, &ShaderProgram::QuadShaderVert}, 
 	{SHADERS_OPTIONS::QUAD_FRAG, &ShaderProgram::QuadShaderFrag}, 
-
 } };
+
+void ShaderProgram::BloomPreprocessingShaderFrag(std::string& data) {
+	data =
+#include "bloom_preprocessing.frag"
+	;
+}
+
+void ShaderProgram::BloomPostprocessingShaderFrag(std::string& data) {
+	data =
+#include "bloom_postprocessing.frag"
+	;
+}
+
 
 void ShaderProgram::QuadShaderVert(std::string& data) {
 	data =
@@ -91,6 +106,7 @@ ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS frag
 {
 	std::string vertex_data;
 	std::string fragment_data;
+
 	(*shaderSourceHandler_[vertex_shader])(vertex_data);
 	(*shaderSourceHandler_[fragment_shader])(fragment_data);
 

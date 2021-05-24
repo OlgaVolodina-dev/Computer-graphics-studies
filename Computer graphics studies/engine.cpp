@@ -11,7 +11,9 @@ Engine::Engine() :
 	camera_(),
 	globalUBO_(),
 	shadowManager_(),
-	quadProgram(QUAD_VERT, QUAD_FRAG)
+	quadProgram(QUAD_VERT, QUAD_FRAG),
+	bloomPreprocessingProgram_(QUAD_VERT, BLOOM_PREPROCESSING_FRAG),
+	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG)
 {
 	// Order matters!
 	globalUBO_.RegisterListener(camera_);
@@ -31,7 +33,7 @@ Engine::Engine() :
 	glGenFramebuffers(1, &msaaFBO_);
 	glGenTextures(1, &msaaTex);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, msaaTex);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGB, SCR_WIDTH, SCR_HEIGHT, GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
 	GLuint msaaDepth = 0;
@@ -48,7 +50,7 @@ Engine::Engine() :
 
 	glGenTextures(1, &postProcessTex_);
 	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -68,8 +70,19 @@ Engine::Engine() :
 	if (err != GL_FRAMEBUFFER_COMPLETE) {
 		std::cout << "Incomplete";
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	glGenTextures(1, &bloomTex_);
+	glBindTexture(GL_TEXTURE_2D, bloomTex_);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	glGenFramebuffers(1, &bloomFBO_);
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomTex_, 0);
+	CHECK_FRAMEBUFFER_STATUS();
 	CHECK_OPENGL_ERROR();
 
 	glGenVertexArrays(1, &emptyVAO_);
@@ -111,11 +124,26 @@ void Engine::Draw()
 	}
 
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);
 	glDisable(GL_DEPTH_TEST);
-	glUseProgram(quadProgram);
+	glUseProgram(bloomPreprocessingProgram_);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
+	glBindVertexArray(emptyVAO_);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	glBindTexture(GL_TEXTURE_2D, bloomTex_);
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST);
+	glUseProgram(bloomPostprocessingProgram_);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, bloomTex_);
+	glUniform1f(0, 0.5);
 	glBindVertexArray(emptyVAO_);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }

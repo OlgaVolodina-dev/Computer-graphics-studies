@@ -31,6 +31,10 @@ private:
 	std::vector<LightSource> lightSources_;
 	ShadowManager shadowManager_;
 	ShaderProgram quadProgram;
+	ShaderProgram bloomPreprocessingProgram_;
+	ShaderProgram bloomPostprocessingProgram_;
+	GLuint bloomTex_;
+	GLuint bloomFBO_;
 };
 
 #endif

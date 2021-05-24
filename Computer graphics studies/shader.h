@@ -20,7 +20,9 @@ enum SHADERS_OPTIONS {
 	DEPTH_PASS_VERT,
 	DEPTH_PASS_FRAG,
 	QUAD_VERT,
-	QUAD_FRAG
+	QUAD_FRAG, 
+	BLOOM_PREPROCESSING_FRAG,
+	BLOOM_POSTPROCESSING_FRAG
 
 };
 
@@ -47,6 +49,8 @@ private:
 	static void TesselationTC(std::string& data);
 	static void QuadShaderVert(std::string& data);
 	static void QuadShaderFrag(std::string& data);
+	static void BloomPreprocessingShaderFrag(std::string& data);
+	static void BloomPostprocessingShaderFrag(std::string& data);
 	static std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> shaderSourceHandler_;
 	GLuint CompileShader(std::string&, GLenum);
 	GLuint program_ = 0;
