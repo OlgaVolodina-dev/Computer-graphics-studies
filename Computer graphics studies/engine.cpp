@@ -13,7 +13,8 @@ Engine::Engine() :
 	shadowManager_(),
 	quadProgram(QUAD_VERT, QUAD_FRAG),
 	bloomPreprocessingProgram_(QUAD_VERT, BLOOM_PREPROCESSING_FRAG),
-	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG)
+	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG), 
+	item_(ItemInitializationInfo("obj/Horn/Horn.obj", "obj/Horn/Horn_BaseColor.png", "obj/Horn/Horn_Metallic.png"))
 {
 	// Order matters!
 	globalUBO_.RegisterListener(camera_);
@@ -26,7 +27,7 @@ Engine::Engine() :
 	globalUBO_.RegisterListener(shadowManager_);
 
 	globalUBO_.Setup();
-
+	item_.LoadItem();
 
 	GLuint msaaTex = 0;
 	GLint samples = 4;
@@ -96,6 +97,7 @@ void Engine::Draw()
 	std::vector<Object*> objects;
 	objects.push_back(&cube_);
 	objects.push_back(&terrain_);
+	objects.push_back(&item_);
 	shadowManager_.ShadowPrepass(objects, showDepth_);
 	if (showDepth_) {
 		return;
@@ -113,6 +115,7 @@ void Engine::Draw()
 	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture());
 	cube_.Draw(camera_);
 	terrain_.Draw();
+	item_.Draw();
 	for (auto& lightSource : lightSources_) {
 		lightSource.Draw();
 	}
@@ -124,28 +127,36 @@ void Engine::Draw()
 	}
 
 
-	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);
+	//glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);
+	//glDisable(GL_DEPTH_TEST);
+	//glUseProgram(bloomPreprocessingProgram_);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, postProcessTex_);
+	//glBindVertexArray(emptyVAO_);
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	//glBindTexture(GL_TEXTURE_2D, bloomTex_);
+	//glGenerateMipmap(GL_TEXTURE_2D);
+
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDisable(GL_DEPTH_TEST);
-	glUseProgram(bloomPreprocessingProgram_);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
-	glBindVertexArray(emptyVAO_);
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	glBindTexture(GL_TEXTURE_2D, bloomTex_);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
+	//glUseProgram(bloomPostprocessingProgram_);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, postProcessTex_);
+	//glActiveTexture(GL_TEXTURE1);
+	//glBindTexture(GL_TEXTURE_2D, bloomTex_);
+	//glUniform1f(0, 0.5);
+	//glBindVertexArray(emptyVAO_);
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDisable(GL_DEPTH_TEST);
-	glUseProgram(bloomPostprocessingProgram_);
+	glUseProgram(quadProgram);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, bloomTex_);
-	glUniform1f(0, 0.5);
 	glBindVertexArray(emptyVAO_);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+
 }
 
 

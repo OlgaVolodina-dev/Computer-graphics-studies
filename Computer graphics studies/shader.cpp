@@ -1,82 +1,87 @@
 #include "shader.h"
 #include <iostream>
 
+void HornShaderFrag(std::string& data) {
+	data =
+#include "horn.frag"
+	;
+}
 
-std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
-	{SHADERS_OPTIONS::SIMPLE_VERT, &ShaderProgram::SimpleShaderVert},
-	{SHADERS_OPTIONS::SIMPLE_FRAG, &ShaderProgram::SimpleShaderFrag},
-	{SHADERS_OPTIONS::PHONG_VERT, &ShaderProgram::PhongShaderVert},
-	{SHADERS_OPTIONS::PHONG_FRAG, &ShaderProgram::PhongShaderFrag}, 
-	{SHADERS_OPTIONS::BLOOM_PREPROCESSING_FRAG, &ShaderProgram::BloomPreprocessingShaderFrag}, 
-	{SHADERS_OPTIONS::BLOOM_POSTPROCESSING_FRAG, &ShaderProgram::BloomPostprocessingShaderFrag}, 
-	{SHADERS_OPTIONS::DEPTH_PASS_VERT, &ShaderProgram::DepthPassShaderVert}, 
-	{SHADERS_OPTIONS::DEPTH_PASS_FRAG, &ShaderProgram::DepthPassShaderFrag}, 
-	{SHADERS_OPTIONS::QUAD_VERT, &ShaderProgram::QuadShaderVert}, 
-	{SHADERS_OPTIONS::QUAD_FRAG, &ShaderProgram::QuadShaderFrag}, 
-} };
-
-void ShaderProgram::BloomPreprocessingShaderFrag(std::string& data) {
+void BloomPreprocessingShaderFrag(std::string& data) {
 	data =
 #include "bloom_preprocessing.frag"
 	;
 }
 
-void ShaderProgram::BloomPostprocessingShaderFrag(std::string& data) {
+void BloomPostprocessingShaderFrag(std::string& data) {
 	data =
 #include "bloom_postprocessing.frag"
 	;
 }
 
 
-void ShaderProgram::QuadShaderVert(std::string& data) {
+void QuadShaderVert(std::string& data) {
 	data =
 #include "quad.vert"
 	;
 }
 
-void ShaderProgram::QuadShaderFrag(std::string& data) {
+void QuadShaderFrag(std::string& data) {
 	data =
 #include "quad.frag"
 	;
 }
 
 
-void ShaderProgram::DepthPassShaderVert(std::string& data) {
+void DepthPassShaderVert(std::string& data) {
 	data =
 #include "depth.vert"
 		;
 }
 
-void ShaderProgram::DepthPassShaderFrag(std::string& data) {
+void DepthPassShaderFrag(std::string& data) {
 	data =
 #include "depth.frag"
 		;
 }
 
-void ShaderProgram::SimpleShaderVert(std::string& data) {
+void SimpleShaderVert(std::string& data) {
 	data =
 #include "simple.vert"
 	;
 }
 
-void ShaderProgram::SimpleShaderFrag(std::string& data) {
+void SimpleShaderFrag(std::string& data) {
 	data =
 #include "simple.frag"
 	;
 }
 
-void ShaderProgram::PhongShaderVert(std::string& data) {
+void PhongShaderVert(std::string& data) {
 	data =
 #include "phong.vert"
 		;
 }
 
-void ShaderProgram::PhongShaderFrag(std::string& data) {
+void PhongShaderFrag(std::string& data) {
 	data =
 #include "phong.frag"
 		;
 }
 
+std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
+	{SHADERS_OPTIONS::SIMPLE_VERT, &SimpleShaderVert},
+	{SHADERS_OPTIONS::SIMPLE_FRAG, &SimpleShaderFrag},
+	{SHADERS_OPTIONS::PHONG_VERT, &PhongShaderVert},
+	{SHADERS_OPTIONS::PHONG_FRAG, &PhongShaderFrag},
+	{SHADERS_OPTIONS::BLOOM_PREPROCESSING_FRAG, &BloomPreprocessingShaderFrag},
+	{SHADERS_OPTIONS::BLOOM_POSTPROCESSING_FRAG, &BloomPostprocessingShaderFrag},
+	{SHADERS_OPTIONS::DEPTH_PASS_VERT, &DepthPassShaderVert},
+	{SHADERS_OPTIONS::DEPTH_PASS_FRAG, &DepthPassShaderFrag},
+	{SHADERS_OPTIONS::QUAD_VERT, &QuadShaderVert},
+	{SHADERS_OPTIONS::QUAD_FRAG, &QuadShaderFrag},
+	{SHADERS_OPTIONS::HORN_FRAG, &HornShaderFrag},
+} };
 
 void ShaderProgram::Use() {
 	glUseProgram(program_);

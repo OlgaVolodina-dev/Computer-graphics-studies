@@ -7,6 +7,7 @@
 #include "lightSource.h"
 #include "shadowManager.h"
 #include "terrain.h"
+#include "Item.h"
 
 class Engine
 {
@@ -35,6 +36,7 @@ private:
 	ShaderProgram bloomPostprocessingProgram_;
 	GLuint bloomTex_;
 	GLuint bloomFBO_;
+	Item item_;
 };
 
 #endif

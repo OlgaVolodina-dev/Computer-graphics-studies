@@ -22,8 +22,8 @@ enum SHADERS_OPTIONS {
 	QUAD_VERT,
 	QUAD_FRAG, 
 	BLOOM_PREPROCESSING_FRAG,
-	BLOOM_POSTPROCESSING_FRAG
-
+	BLOOM_POSTPROCESSING_FRAG,
+	HORN_FRAG
 };
 
 
@@ -36,21 +36,6 @@ public:
 	void Use();
 	operator GLuint() { return program_; };
 private:
-
-	static void DepthPassShaderVert(std::string& data);
-	static void DepthPassShaderFrag(std::string& data);
-	static void SimpleShaderVert(std::string& data);
-	static void SimpleShaderFrag(std::string& data);
-	static void PhongShaderVert(std::string& data);
-	static void PhongShaderFrag(std::string& data);
-	static void TesselationVert(std::string& data);
-	static void TesselationFrag(std::string& data);
-	static void TesselationTES(std::string& data);
-	static void TesselationTC(std::string& data);
-	static void QuadShaderVert(std::string& data);
-	static void QuadShaderFrag(std::string& data);
-	static void BloomPreprocessingShaderFrag(std::string& data);
-	static void BloomPostprocessingShaderFrag(std::string& data);
 	static std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> shaderSourceHandler_;
 	GLuint CompileShader(std::string&, GLenum);
 	GLuint program_ = 0;

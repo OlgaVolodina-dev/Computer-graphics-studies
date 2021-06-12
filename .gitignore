@@ -7,4 +7,6 @@ Computer\ graphics\ studies/third\ parties/
 Computer\ graphics\ studies/x64/
 *.proj.*
 *.vcxproj*
+obj/
+
 
