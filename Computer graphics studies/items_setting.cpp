@@ -40,6 +40,7 @@ void Engine::ItemSetting()
 	cubeInfo.vert = PHONG_VERT;
 	cubeInfo.frag = HORN_FRAG;
 	cubeInfo.n_indices = 10;
+	cubeInfo.colorTexGenerateMipmap = true;
 
 	Item cube(cubeInfo);
 

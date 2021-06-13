@@ -12,6 +12,7 @@ struct ItemInitializationInfo
 {
 	std::string obj_file_name;
 	std::string colorTexName;
+	bool colorTexGenerateMipmap = false;
 	std::string metallicTexName;
 	SHADERS_OPTIONS vert;
 	SHADERS_OPTIONS frag;

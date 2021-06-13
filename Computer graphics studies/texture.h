@@ -6,7 +6,7 @@ class Texture
 {
 public:
 
-	Texture(std::string);
+	Texture(std::string, bool generateMipmap = false);
 	void Use(unsigned int active = 0);
 private:
 	GLuint texture_;

@@ -5,7 +5,7 @@
 #include <iostream>
 #include "utils.h"
 
-Texture::Texture(std::string path)
+Texture::Texture(std::string path, bool generateMipMap)
 {
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(path.data(), &width, &height, &nrChannels, 0);
@@ -28,8 +28,17 @@ Texture::Texture(std::string path)
 	CHECK_OPENGL_ERROR()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	if (!generateMipMap) {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
+	else {
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+	}
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	if (generateMipMap) {
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 	stbi_image_free(data);
 }
 

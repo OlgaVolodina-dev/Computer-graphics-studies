@@ -24,10 +24,10 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec4 FragLightPos;
 
-
+vec3 objectColor;
 vec3 CalcLight(vec4 lightSource, vec4 attenuation, vec4 lightCol) {
 
-    vec3 lightColor = vec3(texture(texture1, TexCoord));
+    vec3 lightColor = lightCol.xyz;// vec3(texture(texture1, TexCoord));
 
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
@@ -47,14 +47,14 @@ vec3 CalcLight(vec4 lightSource, vec4 attenuation, vec4 lightCol) {
     float distance    = length(vec3(lightSource) - FragPos);
     float attenuation_ = 1.0 / (attenuation.x + attenuation.y * distance + 
     		    attenuation.z * (distance * distance));
-    vec3 result = attenuation_ * ( diffuse + ambient);
+    vec3 result = attenuation_ * ( diffuse + ambient) * objectColor;
     return result;
 
 }
 
 vec3 CalcDirectionalLight(vec3 lightDir)
 {
-    vec3 lightColor = vec3(texture(texture1, TexCoord)); 
+    vec3 lightColor = vec3(1.0);; 
     vec3 norm = normalize(Normal);
     float ambientStrength = 0.1;
     vec3 ambient = ambientStrength * lightColor;
@@ -69,13 +69,14 @@ vec3 CalcDirectionalLight(vec3 lightDir)
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
     vec3 specular = specularStrength * spec * lightColor;  
     
-    vec3 result =  diffuse + ambient;
+    vec3 result =  (diffuse + ambient) * objectColor;
     return result;
 }
 
 
 void main()
 {
+objectColor =  vec3(texture(texture1, TexCoord));
     vec3 result1 = CalcLight(lightSource1, attenuation1, lightColor1);
     vec3 result2 = CalcLight(lightSource2, attenuation2,  lightColor2);
     vec3 result3 =  0.2 *CalcDirectionalLight(vec3(lightDir));

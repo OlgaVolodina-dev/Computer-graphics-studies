@@ -2,7 +2,7 @@
 #include <iostream>
 Item::Item(ItemInitializationInfo& info):
 	info(info),
-	colorTex_(info.colorTexName),
+	colorTex_(info.colorTexName, info.colorTexGenerateMipmap),
 	metallicTex_(info.metallicTexName),
 	shader_(info.vert, info.frag),
 	depthPassShader_(DEPTH_PASS_VERT, DEPTH_PASS_FRAG),
