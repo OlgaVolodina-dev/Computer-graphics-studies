@@ -97,7 +97,7 @@ void Engine::Draw()
 	glEnable(GL_DEPTH_TEST);
 	shadowManager_.SetDirectionalLight();
 	std::vector<Object*> objects;
-	objects.push_back(&cube_);
+	//objects.push_back(&cube_);
 	//objects.push_back(&terrain_);
 	for (auto& item : items_) {
 		objects.push_back(&item);
@@ -116,7 +116,7 @@ void Engine::Draw()
 	globalUBO_.UpdateUBO();
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture());
-	cube_.Draw(camera_);
+	//cube_.Draw(camera_);
 	//terrain_.Draw();
 	for (auto& item : items_) {
 		item.Draw();

@@ -12,7 +12,6 @@ void Item::LoadItem()
 {
 	ObjReader::ReadObj(info.obj_file_name, vertices, bb);
 	glGenVertexArrays(1, &VAO);
-	std::cout << vertices.size() << std::endl;
 	GLuint VBO;
 	glGenBuffers(1, &VBO);
 
@@ -29,18 +28,20 @@ void Item::LoadItem()
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	
-	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, info.position_);
-	if (info.rotation_angle != 0.0) {
-		model = glm::rotate(model, glm::radians(info.rotation_angle), glm::vec3(1.0, 0.5, 1.0));
+	modelMatrix_.clear();
+	for (int i = 0; i < info.n_indices; ++i) {
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, posInfo.position_[i]);
+		if (posInfo.rotation_angle_[i] != 0.0) {
+			model = glm::rotate(model, glm::radians(posInfo.rotation_angle_[i]), glm::vec3(1.0, 0.5, 1.0));
+		}
+		modelMatrix_.push_back(glm::scale(model, glm::vec3(posInfo.scale_[i])));
 	}
-	modelMatrix_ = glm::scale(model, glm::vec3(info.scale));
 
 	GLuint modMatBuf;
 	glGenBuffers(1, &modMatBuf);
 	glBindBuffer(GL_ARRAY_BUFFER, modMatBuf);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(modelMatrix_), &modelMatrix_, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, modelMatrix_.size() * sizeof(glm::mat4), modelMatrix_.data(), GL_STATIC_DRAW);
 	for (int i = 0; i < 4; ++i) {
 		glVertexAttribPointer(i + 3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const void*)(sizeof(float) * (i * 4)));
 		glEnableVertexAttribArray(i + 3);
@@ -52,9 +53,13 @@ void Item::LoadItem()
 
 void Item::DrawSimple()
 {
-	glUseProgram(depthPassShader_);
-	glBindVertexArray(VAO);
-	glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
+		glBindVertexArray(VAO);
+		glUseProgram(depthPassShader_);
+	if (info.n_indices == 1) {
+		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
+	} else {
+		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), info.n_indices);
+	}
 }
 
 void Item::Draw() {
@@ -63,5 +68,11 @@ void Item::Draw() {
 	glBindVertexArray(VAO);
 	colorTex_.Use();
 	metallicTex_.Use(1);
-	glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
+
+	if (info.n_indices == 1) {
+		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
+	}
+	else {
+		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), info.n_indices);
+	}
 }
