@@ -13,26 +13,26 @@ void Engine::ItemSetting()
 
 	Item terrain(terrainInfo);
 
-	ItemModelPositionInfo& terrainModelInfo = terrain.GetModelInfo();
+	ItemModelPositionInfo& terrainModelInfo = terrain.GetWriteableModelInfo();
 	terrainModelInfo.scale_ = { 0.01 };
 	terrainModelInfo.position_ = { glm::vec3(0.0, -11.0, 0.0) };
 
 	items_.push_back(terrain);
 
-	ItemInitializationInfo hornInfo;
-	hornInfo.obj_file_name = "obj/Horn/Horn.obj";
-	hornInfo.colorTexName = "obj/Horn/Horn_BaseColor.png";
-	hornInfo.metallicTexName = "obj/Horn/Horn_Metallic.png";
-	hornInfo.vert = PHONG_VERT;
-	hornInfo.frag = HORN_FRAG;
-	
-	Item horn(hornInfo);
+	//ItemInitializationInfo hornInfo;
+	//hornInfo.obj_file_name = "obj/Horn/Horn.obj";
+	//hornInfo.colorTexName = "obj/Horn/Horn_BaseColor.png";
+	//hornInfo.metallicTexName = "obj/Horn/Horn_Metallic.png";
+	//hornInfo.vert = PHONG_VERT;
+	//hornInfo.frag = HORN_FRAG;
+	//
+	//Item horn(hornInfo);
 
-	ItemModelPositionInfo& hornModelInfo = horn.GetModelInfo();
-	hornModelInfo.position_ = { glm::vec3(0.0, 0.0, 4.0) };
-	hornModelInfo.scale_ = { 0.5 };
+	//ItemModelPositionInfo& hornModelInfo = horn.GetWriteableModelInfo();
+	//hornModelInfo.position_ = { glm::vec3(0.0, 0.0, 4.0) };
+	//hornModelInfo.scale_ = { 0.5 };
 
-	items_.push_back(horn);
+	//items_.push_back(horn);
 	
 	ItemInitializationInfo cubeInfo;
 	cubeInfo.obj_file_name = "obj/cube/cube.obj";
@@ -43,7 +43,7 @@ void Engine::ItemSetting()
 
 	Item cube(cubeInfo);
 
-	ItemModelPositionInfo& cubeModelInfo = cube.GetModelInfo();
+	ItemModelPositionInfo& cubeModelInfo = cube.GetWriteableModelInfo();
 	cubeModelInfo.position_ = {
 		{glm::vec3(0.0f,  0.0f,  0.0f)},
 		{glm::vec3(2.0f,  5.0f, -15.0f)},
@@ -66,6 +66,12 @@ void Engine::ItemSetting()
 	}
 
 	items_.push_back(cube);
+
+
+
+
+
+
 	
 	
 }

@@ -69,6 +69,30 @@ void PhongShaderFrag(std::string& data) {
 		;
 }
 
+void SimpleColorVert(std::string& data) {
+	data =
+#include "simple_color.vert"
+		;
+}
+
+void SimpleColorFrag(std::string& data) {
+	data =
+#include "simple_color.frag"
+		;
+}
+
+void WaterFinalVert(std::string& data) {
+	data =
+#include "water_final.vert"
+		;
+}
+
+void WaterFinalFrag(std::string& data) {
+	data =
+#include "water_final.frag"
+		;
+}
+
 std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
 	{SHADERS_OPTIONS::SIMPLE_VERT, &SimpleShaderVert},
 	{SHADERS_OPTIONS::SIMPLE_FRAG, &SimpleShaderFrag},
@@ -81,10 +105,20 @@ std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSo
 	{SHADERS_OPTIONS::QUAD_VERT, &QuadShaderVert},
 	{SHADERS_OPTIONS::QUAD_FRAG, &QuadShaderFrag},
 	{SHADERS_OPTIONS::HORN_FRAG, &HornShaderFrag},
+	{SHADERS_OPTIONS::SIMPLE_COLOR_VERT, &SimpleColorVert},
+	{SHADERS_OPTIONS::SIMPLE_COLOR_FRAG, &SimpleColorFrag},
+	{SHADERS_OPTIONS::WATER_FINAL_VERT, &WaterFinalVert},
+	{SHADERS_OPTIONS::WATER_FINAL_FRAG, &WaterFinalFrag},
+
 } };
 
 void ShaderProgram::Use() {
 	glUseProgram(program_);
+}
+
+ShaderProgram::~ShaderProgram()
+{
+	//glDeleteProgram(program_);
 }
 
 GLuint  ShaderProgram::CompileShader(std::string& data, GLenum shader_t) {

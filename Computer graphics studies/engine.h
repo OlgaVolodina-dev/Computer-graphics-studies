@@ -2,13 +2,11 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 #include "camera.h"
-#include "cube.h"
 #include "UBO.h"
 #include "lightSource.h"
 #include "shadowManager.h"
-#include "terrain.h"
 #include "Item.h"
-
+#include "WaterSimulation.h"
 class Engine
 {
 public:
@@ -27,8 +25,6 @@ private:
 	GLuint postProcessDSTex_ = 0U;
 	GLuint emptyVAO_;
 	void ResolveUBO();
-	Cube cube_;
-	Terrain terrain_;
 	Camera camera_;
 	UBO globalUBO_;
 	std::vector<LightSource> lightSources_;
@@ -39,6 +35,7 @@ private:
 	GLuint bloomTex_;
 	GLuint bloomFBO_;
 	std::vector<Item> items_;
+	WaterSimulation water;
 };
 
 #endif

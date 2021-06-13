@@ -23,7 +23,11 @@ enum SHADERS_OPTIONS {
 	QUAD_FRAG, 
 	BLOOM_PREPROCESSING_FRAG,
 	BLOOM_POSTPROCESSING_FRAG,
-	HORN_FRAG
+	HORN_FRAG,
+	SIMPLE_COLOR_VERT,
+	SIMPLE_COLOR_FRAG,
+	WATER_FINAL_VERT,
+	WATER_FINAL_FRAG
 };
 
 
@@ -32,6 +36,7 @@ class ShaderProgram
 {
 public:
 	ShaderProgram(SHADERS_OPTIONS, SHADERS_OPTIONS);
+	~ShaderProgram();
 	ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS TC, SHADERS_OPTIONS TES, SHADERS_OPTIONS fragment_shader);
 	void Use();
 	operator GLuint() { return program_; };

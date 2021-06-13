@@ -4,16 +4,14 @@
 #define SCR_WIDTH  800
 #define SCR_HEIGHT  600
 
-
 Engine::Engine() :
-	cube_(),
-	terrain_(),
 	camera_(),
 	globalUBO_(),
 	shadowManager_(camera_.GetProjView()),
 	quadProgram(QUAD_VERT, QUAD_FRAG),
 	bloomPreprocessingProgram_(QUAD_VERT, BLOOM_PREPROCESSING_FRAG),
-	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG)
+	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG),
+	water()
 {
 	ItemSetting();
 
@@ -93,34 +91,36 @@ Engine::Engine() :
 }
 
 void Engine::Draw()
-{
+{	
+	camera_.Commit();
 	glEnable(GL_DEPTH_TEST);
-	shadowManager_.SetDirectionalLight();
-	std::vector<Object*> objects;
-	//objects.push_back(&cube_);
-	//objects.push_back(&terrain_);
+	std::vector<Item*> objects;
 	for (auto& item : items_) {
 		objects.push_back(&item);
 	}
+
+	shadowManager_.SetDirectionalLight();
+
 	shadowManager_.ShadowPrepass(objects, showDepth_);
 	if (showDepth_) {
 		return;
 	}
+	water.PreRender(objects, camera_);
+
 	if (msaa_) {
 		glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO_);
 	}
+	
 
 	glClearColor(0.005f, 0.015f, 0.026f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	globalUBO_.UpdateUBO();
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture());
-	//cube_.Draw(camera_);
-	//terrain_.Draw();
 	for (auto& item : items_) {
 		item.Draw();
 	}
+	water.Draw();
 	for (auto& lightSource : lightSources_) {
 		lightSource.Draw();
 	}
@@ -130,7 +130,6 @@ void Engine::Draw()
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, postProcessFBO_);
 		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
-
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);
 	//glDisable(GL_DEPTH_TEST);

@@ -9,20 +9,14 @@
 #include "GL/glew.h"
 #include <vector>
 #include "UBO.h"
-
-
-class Object {
-public:
-	// here will be rules of interface for simple shader drawings
-	virtual void DrawSimple() = 0;
-};
+#include "Item.h"
 
 class ShadowManager final : public IUBOListener
 {
 public:
 	ShadowManager(glm::mat4 projview);
 	void SetDirectionalLight();
-	void ShadowPrepass(std::vector<Object *> &, bool);
+	void ShadowPrepass(std::vector<Item *> &, bool);
 	GLuint GetDepthTexture();
 	GLuint GetVSMTexture() { return vsmTexture_; }
 	std::size_t GetUBOSize() override;

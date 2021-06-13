@@ -60,8 +60,6 @@ ShadowManager::ShadowManager(glm::mat4 projview)
 
 void ShadowManager::SetDirectionalLight()
 {
-
-
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix_));
 
@@ -83,7 +81,7 @@ GLuint ShadowManager::GetDepthTexture()
 	return vsmTexture_;
 }
 
-void ShadowManager::ShadowPrepass(std::vector<Object*>& objects, bool showDepth)
+void ShadowManager::ShadowPrepass(std::vector<Item*>& objects, bool showDepth)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
 	

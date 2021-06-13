@@ -25,21 +25,33 @@ public:
 	Camera& operator=(const Camera&&) = delete;
 	~Camera() override;
 	void ProcessKeyboard(Translation e);
-	void ProcessMouse(float pitch, float yaw);
+	void ProcessMouse(float xoffset, float yoffset);
 	std::size_t GetUBOSize() override;
 	void SetData(std::size_t offset) override;
 	glm::mat4 GetProjView();
+	float GetPitch() { return frame_pitch; }
+	float GetYaw() { return frame_yaw; }
+	glm::vec3 GetPosition() { return frame_position; }
+	glm::mat4 GetCustomCamera(glm::vec3 position, float yaw, float pitch);
+	void Commit();
+
 private:
 	void Resolve();
 	bool quatertions_ = false;
-	glm::vec3 position_;
-	glm::vec3 direction_;
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+	glm::vec3 cameraFront;
+	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+	bool firstMouse = true;
+	float fov = 45.0f;
 	glm::mat4 view_;
-	glm::mat4 rotation_;
-	glm::mat4 translation_;
 	glm::mat4 projection_;
-	glm::vec3 right_;
-	glm::vec3 up_;
+	float yaw = -90.0f;
+	float pitch = 0.0f;
+	glm::mat4 frame_view;
+	float frame_pitch;
+	float frame_yaw;
+	glm::vec3 frame_position;
+	
 
 };
 #endif // CAMERA_H

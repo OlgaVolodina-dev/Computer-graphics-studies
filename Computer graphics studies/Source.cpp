@@ -32,13 +32,13 @@ void processInput(GLFWwindow* window)
 }
 
 float lastX = 400, lastY = 300;
-float yaw = 0.0f;
-float pitch = 0.0f;
+
 bool firstMouse = true;
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (firstMouse) // initially set to true
     {
+        std::cout << "!" << std::endl;
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;
@@ -51,13 +51,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     const float sensitivity = 0.1f;
     xoffset *= sensitivity;
     yoffset *= sensitivity;
-    yaw += xoffset;
-    pitch += yoffset;
-    //if (pitch > 89.0f)
-    //    pitch = 89.0f;
-    //if (pitch < -89.0f)
-    //    pitch = -89.0f;
-    GetEngine().GetCamera().ProcessMouse(pitch, yaw);
+    GetEngine().GetCamera().ProcessMouse(xoffset, yoffset);
 }
 
 

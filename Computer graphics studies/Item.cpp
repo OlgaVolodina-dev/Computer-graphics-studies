@@ -5,12 +5,18 @@ Item::Item(ItemInitializationInfo& info):
 	colorTex_(info.colorTexName),
 	metallicTex_(info.metallicTexName),
 	shader_(info.vert, info.frag),
-	depthPassShader_(DEPTH_PASS_VERT, DEPTH_PASS_FRAG)
+	depthPassShader_(DEPTH_PASS_VERT, DEPTH_PASS_FRAG),
+	simpleColorShader_(SIMPLE_COLOR_VERT, SIMPLE_COLOR_FRAG)
 {}
+
+Item::~Item()
+{
+	glDeleteVertexArrays(1, &VAO);
+}
 
 void Item::LoadItem()
 {
-	ObjReader::ReadObj(info.obj_file_name, vertices, bb);
+	ObjReader::ReadObj(info.obj_file_name, vertices, bb_local);
 	glGenVertexArrays(1, &VAO);
 	GLuint VBO;
 	glGenBuffers(1, &VBO);
@@ -51,10 +57,22 @@ void Item::LoadItem()
 	glUniformBlockBinding(shader_, 0U, 0U);
 }
 
+
+void Item::DrawSimpleColor()
+{
+	glBindVertexArray(VAO);
+	colorTex_.Use(0);
+	if (info.n_indices == 1) {
+		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
+	} else {
+		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), info.n_indices);
+	}
+}
+
 void Item::DrawSimple()
 {
-		glBindVertexArray(VAO);
-		glUseProgram(depthPassShader_);
+	glBindVertexArray(VAO);
+	glUseProgram(depthPassShader_);
 	if (info.n_indices == 1) {
 		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
 	} else {
@@ -63,7 +81,7 @@ void Item::DrawSimple()
 }
 
 void Item::Draw() {
-
+	
 	glUseProgram(shader_);
 	glBindVertexArray(VAO);
 	colorTex_.Use();

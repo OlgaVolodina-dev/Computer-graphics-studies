@@ -7,7 +7,6 @@
 #include "obj_reader.h"
 #include "texture.h"
 #include "shader.h"
-#include "shadowManager.h"
 
 struct ItemInitializationInfo
 {
@@ -30,15 +29,18 @@ struct ItemModelPositionInfo
 	std::vector<glm::vec3> rotation_axis_ = { glm::vec3(1.0, 0.0, 0.0) };
 };
 
-class Item : public Object
+class Item 
 {
 public:
 	Item(ItemInitializationInfo & info);
+	~Item();
 	void LoadItem();
 	void Draw();
 	void DrawSimple();
-
-	ItemModelPositionInfo& GetModelInfo() { return posInfo; }
+	void DrawSimpleColor();
+	ItemModelPositionInfo& GetWriteableModelInfo() { return posInfo; }
+	const ItemModelPositionInfo& GetReadOnlyModelInfo() { return posInfo; }
+	GLuint GetMainProgram() { return shader_; }
 
 private:
 	ItemInitializationInfo info;
@@ -47,9 +49,10 @@ private:
 	Texture colorTex_;
 	Texture metallicTex_;
 	ShaderProgram shader_;
+	ShaderProgram simpleColorShader_;
 	GLuint VAO;
 	ShaderProgram depthPassShader_;
-	BoundingBox bb;
+	BoundingBox bb_local;
 	std::vector<glm::mat4> modelMatrix_ = { glm::mat4(1.0) };
 };
 
