@@ -26,6 +26,11 @@ void Camera::SetData(std::size_t offset)
 	glBufferSubData(GL_UNIFORM_BUFFER, offset + sizeof(glm::mat4) * 2, sizeof(glm::vec4), glm::value_ptr(position_));
 }
 
+glm::mat4 Camera::GetProjView()
+{
+	return projection_ * view_;
+}
+
 std::size_t Camera::GetUBOSize()
 {
 	return sizeof(glm::mat4) * 2 + sizeof(glm::vec4);

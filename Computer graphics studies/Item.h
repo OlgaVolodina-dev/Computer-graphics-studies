@@ -11,21 +11,22 @@
 
 struct ItemInitializationInfo
 {
-	ItemInitializationInfo(std::string filename, std::string colorTex, std::string metallicTex) : 
-		obj_file_name(filename), 
-		colorTexName(colorTex),
-		metallicTexName(metallicTex)
-	{}
 	std::string obj_file_name;
 	std::string colorTexName;
 	std::string metallicTexName;
+	glm::vec3 position_ = glm::vec3(0.0, 0.0, 0.0) ;
+	float scale = 1.0;
+	float rotation_angle = 0.0;
+	glm::vec3 rotation_axis = glm::vec3(0.0, 0.0, 0.0);
+	SHADERS_OPTIONS vert;
+	SHADERS_OPTIONS frag;
+	bool shadowCaster = true;
 };
-
 
 class Item : public Object
 {
 public:
-	Item(ItemInitializationInfo info);
+	Item(ItemInitializationInfo& info);
 	void LoadItem();
 	void Draw();
 	void DrawSimple();
@@ -37,8 +38,9 @@ private:
 	Texture metallicTex_;
 	ShaderProgram shader_;
 	GLuint VAO;
-	glm::vec3 position_ = glm::vec3(0.0, 0.0, -2.0);
 	ShaderProgram depthPassShader_;
+	BoundingBox bb;
+	glm::mat4 modelMatrix_ = glm::mat4(1.0);
 };
 
 #endif // ITEM_H

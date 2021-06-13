@@ -20,7 +20,7 @@ public:
 class ShadowManager final : public IUBOListener
 {
 public:
-	ShadowManager();
+	ShadowManager(glm::mat4 projview);
 	void SetDirectionalLight();
 	void ShadowPrepass(std::vector<Object *> &, bool);
 	GLuint GetDepthTexture();
@@ -28,6 +28,7 @@ public:
 	std::size_t GetUBOSize() override;
 	void SetData(std::size_t offset) override;
 private:
+	glm::mat4 lightProjection_;
 	GLuint UBO_;
 	glm::mat4 lightSpaceMatrix_;
 	GLuint depthTexture_;

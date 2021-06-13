@@ -17,6 +17,8 @@ public:
 	Camera& GetCamera() { return camera_; }
 	void ShowDepth(bool enable) { showDepth_ = enable; }
 private:
+	void ItemSetting();
+
 	bool showDepth_ = false;
 	bool msaa_ = true;
 	GLuint msaaFBO_ = 0U;
@@ -36,7 +38,7 @@ private:
 	ShaderProgram bloomPostprocessingProgram_;
 	GLuint bloomTex_;
 	GLuint bloomFBO_;
-	Item item_;
+	std::vector<Item> items_;
 };
 
 #endif

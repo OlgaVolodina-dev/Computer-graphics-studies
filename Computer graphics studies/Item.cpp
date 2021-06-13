@@ -1,17 +1,18 @@
 #include "Item.h"
 #include <iostream>
-Item::Item(ItemInitializationInfo info):
+Item::Item(ItemInitializationInfo& info):
 	info(info),
 	colorTex_(info.colorTexName),
 	metallicTex_(info.metallicTexName),
-	shader_(PHONG_VERT, HORN_FRAG),
+	shader_(info.vert, info.frag),
 	depthPassShader_(DEPTH_PASS_VERT, DEPTH_PASS_FRAG)
 {}
 
 void Item::LoadItem()
 {
-	ObjReader::ReadObj(info.obj_file_name, vertices);
+	ObjReader::ReadObj(info.obj_file_name, vertices, bb);
 	glGenVertexArrays(1, &VAO);
+	std::cout << vertices.size() << std::endl;
 	GLuint VBO;
 	glGenBuffers(1, &VBO);
 
@@ -28,15 +29,18 @@ void Item::LoadItem()
 	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
-	glm::mat4 modMat;
+	
 	glm::mat4 model = glm::mat4(1.0f);
-	model = glm::translate(model, position_);
-	modMat = glm::scale(model, glm::vec3(1.0));
+	model = glm::translate(model, info.position_);
+	if (info.rotation_angle != 0.0) {
+		model = glm::rotate(model, glm::radians(info.rotation_angle), glm::vec3(1.0, 0.5, 1.0));
+	}
+	modelMatrix_ = glm::scale(model, glm::vec3(info.scale));
 
 	GLuint modMatBuf;
 	glGenBuffers(1, &modMatBuf);
 	glBindBuffer(GL_ARRAY_BUFFER, modMatBuf);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(modMat), &modMat, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(modelMatrix_), &modelMatrix_, GL_STATIC_DRAW);
 	for (int i = 0; i < 4; ++i) {
 		glVertexAttribPointer(i + 3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (const void*)(sizeof(float) * (i * 4)));
 		glEnableVertexAttribArray(i + 3);
@@ -46,15 +50,11 @@ void Item::LoadItem()
 	glUniformBlockBinding(shader_, 0U, 0U);
 }
 
-
-
 void Item::DrawSimple()
 {
-
 	glUseProgram(depthPassShader_);
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
-	
 }
 
 void Item::Draw() {

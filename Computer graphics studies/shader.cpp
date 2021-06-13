@@ -111,7 +111,7 @@ ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS frag
 {
 	std::string vertex_data;
 	std::string fragment_data;
-
+	std::cout << fragment_shader << " " << HORN_FRAG << std::endl;
 	(*shaderSourceHandler_[vertex_shader])(vertex_data);
 	(*shaderSourceHandler_[fragment_shader])(fragment_data);
 

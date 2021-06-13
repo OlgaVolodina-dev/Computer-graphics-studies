@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 struct VertRef
 {
@@ -11,7 +12,7 @@ struct VertRef
     int v, vt, vn;
 };
 
-void ObjReader::ReadObj(std::string& filename, std::vector<Vertex>& verts)
+void ObjReader::ReadObj(std::string& filename, std::vector<Vertex>& verts, BoundingBox& bb)
 {
 
     std::ifstream in(filename.data(), std::ifstream::in);
@@ -32,6 +33,12 @@ void ObjReader::ReadObj(std::string& filename, std::vector<Vertex>& verts)
             float x = 0, y = 0, z = 0, w = 1;
             lineSS >> x >> y >> z >> w;
             positions.push_back(glm::vec4(x, y, z, w));
+            bb.maxX = std::max(x, bb.maxX);
+            bb.maxY = std::max(y, bb.maxY);
+            bb.maxZ = std::max(z, bb.maxZ);
+            bb.minX = std::min(x, bb.minX);
+            bb.minY = std::min(y, bb.minY);
+            bb.minZ = std::min(z, bb.minZ);
         }
 
         // texture

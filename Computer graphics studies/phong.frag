@@ -81,29 +81,13 @@ void main()
     vec3 result3 =  0.2 *CalcDirectionalLight(vec3(lightDir));
     float shadows = 1.0;
     vec3 lightDepth = FragLightPos.xyz / FragLightPos.w * 0.5 + 0.5;
-    //PCF
-    /*
-    vec2 texelSize = 1.0 / textureSize(depthMap, 0);
-    for(int x = -1; x <= 1; ++x)
-    {
-        for(int y = -1; y <= 1; ++y)
-        {
-            float pcfDepth = texture(depthMap, lightDepth.xy + vec2(x, y) * texelSize).r; 
-            shadows += lightDepth.z - 0.005 > pcfDepth ? 0.0 : 1.0;        
-        }    
-    }
-    shadows /= 9.0;
-    */
 
-    vec2 depthColor = textureLod(depthMap, lightDepth.xy, 3).xy;
+        vec2 depthColor = textureLod(depthMap, lightDepth.xy, 2).xy;
         float mu = depthColor.x;
-    if (mu < lightDepth.z) {
         float sigma = depthColor.y;
         float var = max(sigma - pow(mu, 2.0), 0.0002);
         float distance = lightDepth.z - mu; 
         shadows = min(var / (var + pow(distance, 2.0)), 1.0);
-
-    }
 
 
     if (lightDepth.x < 0.0 || lightDepth.x > 1.0 || lightDepth.y < 0.0 || lightDepth.y > 1.0) {

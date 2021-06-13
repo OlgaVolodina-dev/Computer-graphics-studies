@@ -10,16 +10,17 @@ Engine::Engine() :
 	terrain_(),
 	camera_(),
 	globalUBO_(),
-	shadowManager_(),
+	shadowManager_(camera_.GetProjView()),
 	quadProgram(QUAD_VERT, QUAD_FRAG),
 	bloomPreprocessingProgram_(QUAD_VERT, BLOOM_PREPROCESSING_FRAG),
-	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG), 
-	item_(ItemInitializationInfo("obj/Horn/Horn.obj", "obj/Horn/Horn_BaseColor.png", "obj/Horn/Horn_Metallic.png"))
+	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG)
 {
+	ItemSetting();
+
 	// Order matters!
 	globalUBO_.RegisterListener(camera_);
 	lightSources_.push_back(LightSource(glm::vec3(0.0f, 0.0f, 5.0f)));
-	lightSources_.push_back(LightSource(glm::vec3(0.0f, 0.0f, -5.0f)));
+	lightSources_.push_back(LightSource(glm::vec3(-3.0f, 1.0f, -0.0f)));
 	// if lightSource will be deleted?
 	for (auto& lightSource : lightSources_) {
 		globalUBO_.RegisterListener(lightSource);
@@ -27,7 +28,9 @@ Engine::Engine() :
 	globalUBO_.RegisterListener(shadowManager_);
 
 	globalUBO_.Setup();
-	item_.LoadItem();
+	for (auto& item : items_) {
+		item.LoadItem();
+	}
 
 	GLuint msaaTex = 0;
 	GLint samples = 4;
@@ -87,7 +90,6 @@ Engine::Engine() :
 	CHECK_OPENGL_ERROR();
 
 	glGenVertexArrays(1, &emptyVAO_);
-
 }
 
 void Engine::Draw()
@@ -96,13 +98,14 @@ void Engine::Draw()
 	shadowManager_.SetDirectionalLight();
 	std::vector<Object*> objects;
 	objects.push_back(&cube_);
-	objects.push_back(&terrain_);
-	objects.push_back(&item_);
+	//objects.push_back(&terrain_);
+	for (auto& item : items_) {
+		objects.push_back(&item);
+	}
 	shadowManager_.ShadowPrepass(objects, showDepth_);
 	if (showDepth_) {
 		return;
 	}
-
 	if (msaa_) {
 		glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO_);
 	}
@@ -114,8 +117,10 @@ void Engine::Draw()
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture());
 	cube_.Draw(camera_);
-	terrain_.Draw();
-	item_.Draw();
+	//terrain_.Draw();
+	for (auto& item : items_) {
+		item.Draw();
+	}
 	for (auto& lightSource : lightSources_) {
 		lightSource.Draw();
 	}

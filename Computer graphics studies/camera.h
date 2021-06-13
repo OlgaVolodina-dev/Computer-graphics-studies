@@ -28,6 +28,7 @@ public:
 	void ProcessMouse(float pitch, float yaw);
 	std::size_t GetUBOSize() override;
 	void SetData(std::size_t offset) override;
+	glm::mat4 GetProjView();
 private:
 	void Resolve();
 	bool quatertions_ = false;

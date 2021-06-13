@@ -1,18 +1,16 @@
 #include "shadowManager.h"
+const unsigned int SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
 
-
-
-ShadowManager::ShadowManager() 
+ShadowManager::ShadowManager(glm::mat4 projview) 
 {
 	glGenFramebuffers(1, &depthFBO_);
-	const unsigned int SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
 
 	glGenTextures(1, &vsmTexture_);
 	glBindTexture(GL_TEXTURE_2D, vsmTexture_);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F,
 		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -40,22 +38,30 @@ ShadowManager::ShadowManager()
 	glBindBufferRange(GL_UNIFORM_BUFFER, 0,
 		UBO_, 0, sizeof(glm::mat4));
 
+
+	float near_plane = 1.0f, far_plane = 10.0f;
+	lightProjection_ = glm::ortho(-7.0f, 7.0f, -7.0f, 7.0f, near_plane, far_plane);
+	glm::vec3 position = glm::vec3(0.0f, 4.0f, 0.0f);
+	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
+	direction_ = position - direction;
+	glm::vec3 up = -glm::cross(glm::vec3(1.0, 0.0, 0.0), position - direction);
+	glm::mat4 lightView = glm::lookAt(position,
+		position + direction,
+		up);
+
+	lightSpaceMatrix_ = lightProjection_ * lightView;
+
+	glm::mat4 projViewInverse = glm::inverse(projview);
+	glm::mat4 inverseLightView = glm::inverse(lightView);
+
+	
+
 }
 
 void ShadowManager::SetDirectionalLight()
 {
-	float near_plane = 5.0f, far_plane = 30.0f;
-	glm::mat4 lightProjection = glm::ortho(-15.0f, 15.0f, -15.0f, 15.0f, near_plane, far_plane);
-		//glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-	glm::vec3 position = glm::vec3(0.0f, 5.0f, 5.0f);
-	glm::vec3 direction = glm::vec3(0.0f, 0.0f, 0.0f);
-	direction_ = position - direction;
-	glm::vec3 up = -glm::cross(glm::vec3(1.0, 0.0, 0.0),  position-direction);
-	glm::mat4 lightView = glm::lookAt(position,
-		direction,
-		up);
 
-	lightSpaceMatrix_ = lightProjection * lightView;
+
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix_));
 
@@ -74,16 +80,14 @@ void ShadowManager::SetData(std::size_t offset)
 
 GLuint ShadowManager::GetDepthTexture()
 {
-	return depthTexture_;
+	return vsmTexture_;
 }
 
 void ShadowManager::ShadowPrepass(std::vector<Object*>& objects, bool showDepth)
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
 	
-	glBindBufferRange(GL_UNIFORM_BUFFER, 0,
-		UBO_, 0, sizeof(glm::mat4));
-	const unsigned int SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
+	glBindBufferRange(GL_UNIFORM_BUFFER, 0, UBO_, 0, sizeof(glm::mat4));
 	glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
 	GLint fbo = showDepth ? 0 : depthFBO_;
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -95,6 +99,7 @@ void ShadowManager::ShadowPrepass(std::vector<Object*>& objects, bool showDepth)
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glGenerateTextureMipmap(vsmTexture_);
+	glViewport(0, 0, 800, 600);
 }
 
 
