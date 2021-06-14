@@ -10,19 +10,23 @@ layout(std140, binding = 2) uniform GlobalMatrices
     vec4 lightSource2;
     vec4 attenuation2;
     vec4 lightColor2;
-    mat4 lightSpaceMatrix;
+    mat4 lightSpaceMatrix[3];
     vec4 lightDir;
 };
 
 out vec4 FragColor;
   
 layout(binding=0) uniform sampler2D texture1;
-layout(binding=2) uniform sampler2D depthMap;
+layout(binding=2) uniform sampler2D depthMap1;
+layout(binding=7) uniform sampler2D depthMap2;
+layout(binding=8) uniform sampler2D depthMap3;
 
 in vec3 FragPos;
 in vec2 TexCoord;
 in vec3 Normal;
-in vec4 FragLightPos;
+in vec4 FragLightPos1;
+in vec4 FragLightPos2;
+in vec4 FragLightPos3;
 
 vec3 objectColor;
 vec3 CalcLight(vec4 lightSource, vec4 attenuation, vec4 lightCol) {
@@ -77,14 +81,9 @@ vec3 CalcDirectionalLight(vec3 lightDir)
 }
 
 
-void main()
+float CalculateVSM(vec3 lightDepth, sampler2D depthMap)
 {
-objectColor =  vec3(texture(texture1, TexCoord));
-    vec3 result1 = CalcLight(lightSource1, attenuation1, lightColor1);
-    vec3 result2 = CalcLight(lightSource2, attenuation2,  lightColor2);
-    vec3 result3 =  CalcDirectionalLight(vec3(lightDir));
     float shadows = 1.0;
-    vec3 lightDepth = FragLightPos.xyz / FragLightPos.w * 0.5 + 0.5;
     vec2 depthColor = textureLod(depthMap, lightDepth.xy, 0).xy;
     if (lightDepth.z - 0.005 > textureLod(depthMap, lightDepth.xy, 0).r) {
         float mu = depthColor.x;
@@ -92,14 +91,62 @@ objectColor =  vec3(texture(texture1, TexCoord));
         float var = max(sigma - pow(mu, 2.0), 0.0002);
         float distance = lightDepth.z - mu; 
         shadows = min(var / (var + pow(distance, 2.0)), 1.0);
-       
     }
+    return shadows;
+}
 
-
-    if (lightDepth.x < 0.001 || lightDepth.x > 0.99 || lightDepth.y < 0.001 || lightDepth.y > 0.99) {
-       shadows = 1.0;
+float CalculatePCF(vec3 lightDepth, sampler2D depthMap)
+{
+    float shadows = 1.0;
+    float bias = 0.05;
+    if (lightDepth.z - bias > textureLod(depthMap, lightDepth.xy, 0).r) {
+        shadows = 0.0;
+        vec2 texelSize = 1.0 / textureSize(depthMap, 0);
+        for(int x = -3; x <= 3; ++x)
+        {
+            for(int y = -3; y <= 3; ++y)
+            {
+                float pcfDepth = textureLod(depthMap, lightDepth.xy + vec2(x, y) * texelSize, 0).r; 
+                shadows += lightDepth.z - bias > pcfDepth ? 0.0 : 1.0;
+            }    
+        }
+        shadows /= 49;
     }
+    return shadows;
+}
 
+
+void main()
+{
+objectColor =  vec3(texture(texture1, TexCoord));
+    vec3 result1 = CalcLight(lightSource1, attenuation1, lightColor1);
+    vec3 result2 = CalcLight(lightSource2, attenuation2,  lightColor2);
+    vec3 result3 =  CalcDirectionalLight(vec3(lightDir));
+    float shadows = 1.0;
+    vec3 lightDepth;
+    lightDepth = FragLightPos1.xyz / FragLightPos1.w * 0.5 + 0.5;
+    if (lightDepth.z < 1.0 && lightDepth.x > 0.001 && lightDepth.x < 0.99 && lightDepth.y > 0.001 && lightDepth.y < 0.99) {
+        shadows = CalculateVSM(lightDepth, depthMap1);
         FragColor = vec4(((shadows * result3) + result2+ result1) / 3.0 , 1.0);
+        return;
+    } 
+
+    lightDepth = FragLightPos2.xyz / FragLightPos2.w * 0.5 + 0.5;
+    if (lightDepth.z < 1.0 && lightDepth.x > 0.001 && lightDepth.x < 0.99 && lightDepth.y > 0.001 && lightDepth.y < 0.99) {
+        shadows = CalculateVSM(lightDepth, depthMap2);
+        FragColor = vec4(((shadows * result3) + result2+ result1) / 3.0 , 1.0);
+        return;
+    } 
+
+    lightDepth = FragLightPos3.xyz / FragLightPos3.w * 0.5 + 0.5;
+    if (lightDepth.z < 1.0 && lightDepth.x > 0.001 && lightDepth.x < 0.99 && lightDepth.y > 0.001 && lightDepth.y < 0.99) {
+        shadows = CalculatePCF(lightDepth, depthMap3);
+        FragColor = vec4(((shadows * result3) + result2+ result1) / 3.0 , 1.0);
+        return;
+    } 
+
+
+    FragColor = vec4(((shadows * result3) + result2+ result1) / 3.0 , 1.0);
+    //FragColor = vec4(lightDepth.x);
 }
 )"

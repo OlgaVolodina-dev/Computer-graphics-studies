@@ -12,7 +12,6 @@ Engine::Engine() :
 	bloomPreprocessingProgram_(QUAD_VERT, BLOOM_PREPROCESSING_FRAG),
 	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG),
 	gaussBlur()
-	//water()
 {
 	ItemSetting();
 
@@ -98,20 +97,21 @@ Engine::Engine() :
 void Engine::Draw()
 {	
 	camera_.Commit();
-	//shadowManager_.CascadeMatrixes(camera_);
-	glEnable(GL_DEPTH_TEST);
 	std::vector<Item*> objects;
 	for (auto& item : items_) {
 		objects.push_back(&item);
 	}
+	shadowManager_.CascadeMatrixes(camera_, objects);
+	glEnable(GL_DEPTH_TEST);
 
-	shadowManager_.SetDirectionalLight();
 
 	shadowManager_.ShadowPrepass(objects, showDepth_);
 	if (showDepth_) {
 		return;
 	}
-	gaussBlur.Blur(shadowManager_.GetVSMTexture(), 1, 3, false);
+	gaussBlur.Blur(shadowManager_.GetVSMTexture()[0], 1, 1, false);
+	gaussBlur.Blur(shadowManager_.GetVSMTexture()[1], 1, 1, false);
+	//gaussBlur.Blur(shadowManager_.GetVSMTexture()[2], 1, 1, false);
 
 	water.PreRender(objects, camera_);
 
@@ -125,7 +125,11 @@ void Engine::Draw()
 	globalUBO_.UpdateUBO();
 	
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture());
+	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture()[0]);
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture()[1]);
+	glActiveTexture(GL_TEXTURE8);
+	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture()[2]);
 	for (auto& item : items_) {
 		item.Draw();
 	}
@@ -164,7 +168,7 @@ void Engine::Draw()
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//glUseProgram(quadProgram);
 	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, bloomTex_);
+	//glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture()[2]);
 	//glBindVertexArray(emptyVAO_);
 	//glDrawArrays(GL_TRIANGLES, 0, 3);
 

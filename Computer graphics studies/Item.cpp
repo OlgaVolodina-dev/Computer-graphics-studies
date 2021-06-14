@@ -55,6 +55,8 @@ void Item::LoadItem()
 	}
 	//dirty for gloabal UBO
 	glUniformBlockBinding(shader_, 0U, 0U);
+
+	CalculateBoundingBoxes();
 }
 
 
@@ -92,5 +94,25 @@ void Item::Draw() {
 	}
 	else {
 		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), info.n_indices);
+	}
+}
+
+void Item::CalculateBoundingBoxes()
+{
+	BoundingBox bb_world_item;
+	glm::vec4 min, max;
+	for (auto& modelMatrix : modelMatrix_) {
+		min = glm::vec4(bb_local.minX, bb_local.minY, bb_local.minZ, 1.0);
+		max = glm::vec4(bb_local.maxX, bb_local.maxY, bb_local.maxZ, 1.0);
+		min = modelMatrix * min;
+		max = modelMatrix * max;
+		bb_world_item.maxX = max.x;
+		bb_world_item.maxY = max.y;
+		bb_world_item.maxZ = max.z;
+		bb_world_item.minX = min.x;
+		bb_world_item.minY = min.y;
+		bb_world_item.minZ = min.z;
+		bb_world.push_back(bb_world_item);
+		std::cout << max.y << std::endl;
 	}
 }

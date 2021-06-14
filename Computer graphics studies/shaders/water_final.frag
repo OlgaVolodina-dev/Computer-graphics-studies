@@ -13,7 +13,7 @@ layout(std140, binding = 2) uniform GlobalMatrices
     vec4 lightSource2;
     vec4 attenuation2;
     vec4 lightColor2;
-    mat4 lightSpaceMatrix;
+    mat4 lightSpaceMatrix[3];
     vec4 lightDir;
 };
 
@@ -28,7 +28,6 @@ layout(binding=6) uniform sampler2D normalTex;
 in vec3 FragPos;
 in vec2 TexCoord;
 in vec3 Normal;
-in vec4 FragLightPos;
 in vec4 FragPosScreen;
 
 #define WAVE_STRENGTH 0.02

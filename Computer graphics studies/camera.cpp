@@ -73,7 +73,7 @@ glm::mat4 Camera::GetCustomCamera(glm::vec3 position, float yaw, float pitch)
 //TODO take enum class
 void Camera::ProcessKeyboard(Translation e, float ellapsed_milliseconds)
 {
-	const float cameraSpeed = 7.0f * ellapsed_milliseconds / 1000.0;
+	const float cameraSpeed = 10.0f * ellapsed_milliseconds / 1000.0;
 	switch (e)
 	{
 	case FORWARD:

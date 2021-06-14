@@ -15,14 +15,13 @@ layout(std140, binding = 2) uniform GlobalMatrices
     vec4 lightSource2;
     vec4 attenuation2;
     vec4 lightColor2;
-    mat4 lightSpaceMatrix;
+    mat4 lightSpaceMatrix[3];
     vec4 lightDir;
 };
 
 out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
-out vec4 FragLightPos;
 out vec4 FragPosScreen;
 
 void main()
@@ -32,7 +31,6 @@ void main()
     FragPosScreen = gl_Position;
     FragPos = vec3(modelTransform * vec4(aPos, 1.0));
     TexCoord = aTexCoord * 12.0;
-    FragLightPos = lightSpaceMatrix * vec4(FragPos, 1.0);
     Normal = mat3(transpose(inverse(modelTransform))) * aNormal;
 }
 )"

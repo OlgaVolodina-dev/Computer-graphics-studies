@@ -12,7 +12,7 @@ layout(std140, binding = 2) uniform GlobalMatrices
     vec4 lightSource2;
     vec4 attenuation2;
     vec4 lightColor2;
-    mat4 lightSpaceMatrix;
+    mat4 lightSpaceMatrix[3];
     vec4 lightDir;
 };
 

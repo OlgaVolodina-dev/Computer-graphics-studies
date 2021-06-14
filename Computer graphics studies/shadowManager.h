@@ -19,20 +19,22 @@ public:
 	void SetDirectionalLight();
 	void ShadowPrepass(std::vector<Item *> &, bool);
 	GLuint GetDepthTexture();
-	GLuint GetVSMTexture() { return vsmTexture_; }
+	GLuint* GetVSMTexture() { return vsmTexture_; }
 	std::size_t GetUBOSize() override;
 	void SetData(std::size_t offset) override;
-	void CascadeMatrixes(Camera&);
+	void CascadeMatrixes(Camera&, std::vector <Item*> & objects);
+	constexpr static const int SPLIT_NUMBER = 3;
 private:
 	glm::mat4 lightProjection_;
 	GLuint UBO_;
 	glm::mat4 lightSpaceMatrix_;
 	GLuint depthTexture_;
-	GLuint vsmTexture_;
+	GLuint vsmTexture_[SPLIT_NUMBER];
 	GLuint depthFBO_;
 	glm::vec3 direction_;
 	glm::mat4 lightView;
 	std::vector<glm::mat4> lightProjMatrixes;
+	bool cascade_shadows = true;
 };
 
 #endif
