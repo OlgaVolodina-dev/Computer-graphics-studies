@@ -9,9 +9,11 @@ GaussianBlur::GaussianBlur():
 	std::cout << __func__ << std::endl;
 	glGenTextures(1, &cacheTex);
 	glBindTexture(GL_TEXTURE_2D, cacheTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glGenFramebuffers(1, &pingFbo);
@@ -21,7 +23,7 @@ GaussianBlur::GaussianBlur():
 }
 
 
-void GaussianBlur::Blur(GLuint texture, size_t size, size_t iterations)
+void GaussianBlur::Blur(GLuint texture, size_t size, size_t iterations, bool generate_mipmap)
 {
 	glDisable(GL_DEPTH_TEST);
 
@@ -50,7 +52,9 @@ void GaussianBlur::Blur(GLuint texture, size_t size, size_t iterations)
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glGenerateMipmap(GL_TEXTURE_2D);
+	if (generate_mipmap) {
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 	glEnable(GL_DEPTH_TEST);
 
 }

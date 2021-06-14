@@ -56,7 +56,7 @@ vec3 CalcLight(vec4 lightSource, vec4 attenuation, vec4 lightCol) {
 
 vec3 CalcDirectionalLight(vec3 lightDir)
 {
-    vec3 lightColor = vec3(1.0); 
+    vec3 lightColor = vec3(2.0); 
     vec3 norm = normalize(Normal);
     float ambientStrength = 1.0;
     vec3 ambient = ambientStrength * lightColor;
@@ -85,17 +85,18 @@ objectColor =  vec3(texture(texture1, TexCoord));
     vec3 result3 =  CalcDirectionalLight(vec3(lightDir));
     float shadows = 1.0;
     vec3 lightDepth = FragLightPos.xyz / FragLightPos.w * 0.5 + 0.5;
-    vec2 depthColor = textureLod(depthMap, lightDepth.xy, 2).xy;
-    //if (lightDepth.z - 0.05 > textureLod(depthMap, lightDepth.xy, 0).r) {
+    vec2 depthColor = textureLod(depthMap, lightDepth.xy, 0).xy;
+    if (lightDepth.z - 0.005 > textureLod(depthMap, lightDepth.xy, 0).r) {
         float mu = depthColor.x;
         float sigma = depthColor.y;
         float var = max(sigma - pow(mu, 2.0), 0.0002);
         float distance = lightDepth.z - mu; 
         shadows = min(var / (var + pow(distance, 2.0)), 1.0);
-    //}
+       
+    }
 
 
-    if (lightDepth.x < 0.0 || lightDepth.x > 1.0 || lightDepth.y < 0.0 || lightDepth.y > 1.0) {
+    if (lightDepth.x < 0.001 || lightDepth.x > 0.99 || lightDepth.y < 0.001 || lightDepth.y > 0.99) {
        shadows = 1.0;
     }
 

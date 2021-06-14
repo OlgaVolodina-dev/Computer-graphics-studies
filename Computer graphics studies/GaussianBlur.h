@@ -12,7 +12,7 @@ class GaussianBlur
 public:
 	GaussianBlur();
 	GLuint cacheTex;
-	void Blur(GLuint, size_t, size_t);
+	void Blur(GLuint, size_t, size_t, bool generate_mipmap = true);
 private:
 	GLuint emptyVAO;
 	GLuint pingFbo;

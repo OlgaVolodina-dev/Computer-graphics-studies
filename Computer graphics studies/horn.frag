@@ -58,7 +58,7 @@ vec3 CalcLight(vec4 lightSource, vec4 attenuation, vec4 lightCol) {
 
 vec3 CalcDirectionalLight(vec3 lightDir)
 {
-    vec3 lightColor = vec3(1.0); 
+    vec3 lightColor = vec3(2.0); 
 
     vec3 norm = normalize(Normal);
     float ambientStrength = 1.0;

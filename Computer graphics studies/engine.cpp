@@ -56,6 +56,8 @@ Engine::Engine() :
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glGenTextures(1, &postProcessDSTex_);
@@ -77,8 +79,10 @@ Engine::Engine() :
 	glGenTextures(1, &bloomTex_);
 	glBindTexture(GL_TEXTURE_2D, bloomTex_);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -107,7 +111,7 @@ void Engine::Draw()
 	if (showDepth_) {
 		return;
 	}
-	gaussBlur.Blur(shadowManager_.GetVSMTexture(), 1, 3);
+	gaussBlur.Blur(shadowManager_.GetVSMTexture(), 1, 3, false);
 
 	water.PreRender(objects, camera_);
 
@@ -136,35 +140,33 @@ void Engine::Draw()
 		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);
-	//glDisable(GL_DEPTH_TEST);
-	//glUseProgram(bloomPreprocessingProgram_);
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, postProcessTex_);
-	//glBindVertexArray(emptyVAO_);
-	//glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	//glBindTexture(GL_TEXTURE_2D, bloomTex_);
-	//glGenerateMipmap(GL_TEXTURE_2D);
-
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);
 	glDisable(GL_DEPTH_TEST);
-	//glUseProgram(bloomPostprocessingProgram_);
-	//glActiveTexture(GL_TEXTURE0);
-	//glBindTexture(GL_TEXTURE_2D, postProcessTex_);
-	//glActiveTexture(GL_TEXTURE1);
-	//glBindTexture(GL_TEXTURE_2D, bloomTex_);
-	//glUniform1f(0, 0.5);
-	//glBindVertexArray(emptyVAO_);
-	//glDrawArrays(GL_TRIANGLES, 0, 3);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glUseProgram(quadProgram);
+	glUseProgram(bloomPreprocessingProgram_);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
 	glBindVertexArray(emptyVAO_);
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	gaussBlur.Blur(bloomTex_, 0, 5, false);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDisable(GL_DEPTH_TEST);
+	glUseProgram(bloomPostprocessingProgram_);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, bloomTex_);
+	glUniform1f(0, 0.5);
+	glBindVertexArray(emptyVAO_);
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glUseProgram(quadProgram);
+	//glActiveTexture(GL_TEXTURE0);
+	//glBindTexture(GL_TEXTURE_2D, bloomTex_);
+	//glBindVertexArray(emptyVAO_);
+	//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 }
 

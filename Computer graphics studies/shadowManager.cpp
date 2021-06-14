@@ -13,12 +13,10 @@ ShadowManager::ShadowManager(glm::mat4 projview)
 	glBindTexture(GL_TEXTURE_2D, vsmTexture_);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F,
 		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);	
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 
 	glGenTextures(1, &depthTexture_);
@@ -27,7 +25,8 @@ ShadowManager::ShadowManager(glm::mat4 projview)
 		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthFBO_);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, vsmTexture_, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture_, 0);
@@ -43,8 +42,9 @@ ShadowManager::ShadowManager(glm::mat4 projview)
 		UBO_, 0, sizeof(glm::mat4));
 
 
-	float near_plane = 1.0f, far_plane = 10.0f;
-	lightProjection_ = glm::ortho(-7.0f, 7.0f, -7.0f, 7.0f, near_plane, far_plane);
+	float near_plane = 1.0f, far_plane = 15.0f;
+	const float boundary = 13.5;
+	lightProjection_ = glm::ortho(-boundary, boundary, -boundary, boundary, near_plane, far_plane);
 	glm::vec3 position = glm::vec3(0.0f, 4.0f, 0.0f);
 	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
 	direction_ = position - direction;
