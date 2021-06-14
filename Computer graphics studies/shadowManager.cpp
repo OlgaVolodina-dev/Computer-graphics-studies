@@ -2,42 +2,13 @@
 #include <algorithm>
 #include <iostream>
 #define SPLIT_NUMBER 3
-const unsigned int SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
 
 
 ShadowManager::ShadowManager(glm::mat4 projview) 
 {
 	glGenFramebuffers(1, &depthFBO_);
 
-	glGenTextures(SPLIT_NUMBER, vsmTexture_);
-	for (int i = 0; i < SPLIT_NUMBER; ++i) {
-		glBindTexture(GL_TEXTURE_2D, vsmTexture_[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F,
-			SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		if (i != 0) {
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		else {
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		}
-	}
-
-
-	glGenTextures(1, &depthTexture_);
-	glBindTexture(GL_TEXTURE_2D, depthTexture_);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-		SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-
+	CreateTextures();
 
 	glGenBuffers(1, &UBO_);
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
@@ -112,11 +83,49 @@ void ShadowManager::CascadeMatrixes(Camera& camera, std::vector<Item *>& objects
 	}
 }
 
+
+void ShadowManager::CreateTextures()
+{
+	
+	for (int i = 0; i < SPLIT_NUMBER; ++i) {
+		if (vsmTexture_[i]) {
+			glDeleteTextures(1, &(vsmTexture_[i]));
+		}
+		glGenTextures(1, &(vsmTexture_[i]));
+		glBindTexture(GL_TEXTURE_2D, vsmTexture_[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F,
+			scr_width, scr_height, 0, GL_RGBA, GL_FLOAT, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		if (i != 0) {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		else {
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
+	}
+
+	if (depthTexture_) {
+		glDeleteTextures(1, &depthTexture_);
+	}
+	glGenTextures(1, &depthTexture_);
+	glBindTexture(GL_TEXTURE_2D, depthTexture_);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+		scr_width, scr_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+}
+
 void ShadowManager::SetDirectionalLight()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightSpaceMatrix_));
-
+	
 }
 
 std::size_t ShadowManager::GetUBOSize()
@@ -135,6 +144,13 @@ GLuint ShadowManager::GetDepthTexture()
 	return depthTexture_;
 }
 
+void ShadowManager::UpdateWindowSize(int width, int height)
+{
+	scr_width = width;
+	scr_height = height;
+	CreateTextures();
+}
+
 void ShadowManager::ShadowPrepass(std::vector<Item*>& objects, bool showDepth)
 {
 	for (int i = 0; i < SPLIT_NUMBER; ++i) {
@@ -148,7 +164,7 @@ void ShadowManager::ShadowPrepass(std::vector<Item*>& objects, bool showDepth)
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightProjMatrixes[i]));
 		glBindBufferRange(GL_UNIFORM_BUFFER, 0, UBO_, 0, sizeof(glm::mat4));
 
-		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glViewport(0, 0, scr_width, scr_height);
 		GLint fbo = showDepth ? 0 : depthFBO_;
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -158,7 +174,7 @@ void ShadowManager::ShadowPrepass(std::vector<Item*>& objects, bool showDepth)
 			object->DrawSimple();
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, 800, 600);
+		glViewport(0, 0, scr_width, scr_height);
 		if (showDepth) {
 			return;
 		}

@@ -95,6 +95,8 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+        int width, height;
+        glfwGetWindowSize(window, &width, &height);
         auto timePoint = std::chrono::steady_clock::now();
         auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(timePoint - start);
         start = timePoint;
@@ -104,6 +106,7 @@ int main()
         
         // render
         // ------
+        GetEngine().SetWindowSize(width, height);
         GetEngine().Draw();
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)

@@ -1,8 +1,7 @@
 #include "engine.h"
 #include "utils.h"
 #include <iostream>
-#define SCR_WIDTH  800
-#define SCR_HEIGHT  600
+
 
 Engine::Engine() :
 	camera_(),
@@ -29,19 +28,42 @@ Engine::Engine() :
 	for (auto& item : items_) {
 		item.LoadItem();
 	}
+	glGenFramebuffers(1, &postProcessFBO_);
+	glGenFramebuffers(1, &bloomFBO_);
+	glGenVertexArrays(1, &emptyVAO_);
+	glGenFramebuffers(1, &msaaFBO_);
+	CreateTextures();
+}
 
+void Engine::SetWindowSize(int width, int height)
+{
+	if (width == scr_width && height == scr_height) {
+		return;
+	}
+
+	camera_.UpdateWindowSize(width, height);
+	shadowManager_.UpdateWindowSize(width, height);
+	water.UpdateWindowSize(width, height);
+	gaussBlur.UpdateWindowSize(width, height);
+	scr_width = width;
+	scr_height = height;
+	CreateTextures();
+}
+
+void Engine::CreateTextures()
+{
 	GLuint msaaTex = 0;
 	GLint samples = 4;
-	glGenFramebuffers(1, &msaaFBO_);
+
 	glGenTextures(1, &msaaTex);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, msaaTex);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, GL_TRUE);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, GL_RGBA16F, scr_width, scr_height, GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
 
 	GLuint msaaDepth = 0;
 	glGenRenderbuffers(1, &msaaDepth);
 	glBindRenderbuffer(GL_RENDERBUFFER, msaaDepth);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT, scr_width, scr_height);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO_);
@@ -50,34 +72,40 @@ Engine::Engine() :
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	CHECK_OPENGL_ERROR();
 
+	if (postProcessTex_) {
+		glDeleteTextures(1, &postProcessTex_);
+	}
 	glGenTextures(1, &postProcessTex_);
 	glBindTexture(GL_TEXTURE_2D, postProcessTex_);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, scr_width, scr_height, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	if (postProcessDSTex_) {
+		glDeleteTextures(1, &postProcessDSTex_);
+	}
 	glGenTextures(1, &postProcessDSTex_);
 	glBindTexture(GL_TEXTURE_2D, postProcessDSTex_);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, scr_width, scr_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glGenFramebuffers(1, &postProcessFBO_);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFBO_);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postProcessTex_, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, postProcessDSTex_, 0);
-	GLenum err = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (err != GL_FRAMEBUFFER_COMPLETE) {
-		std::cout << "Incomplete";
-	}
+	CHECK_FRAMEBUFFER_STATUS();
 
+	if (bloomTex_) {
+		glDeleteTextures(1, &bloomTex_);
+	}
 	glGenTextures(1, &bloomTex_);
 	glBindTexture(GL_TEXTURE_2D, bloomTex_);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, scr_width, scr_height, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -85,17 +113,16 @@ Engine::Engine() :
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
-	glGenFramebuffers(1, &bloomFBO_);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, bloomTex_, 0);
 	CHECK_FRAMEBUFFER_STATUS();
 	CHECK_OPENGL_ERROR();
-
-	glGenVertexArrays(1, &emptyVAO_);
 }
 
 void Engine::Draw()
 {	
+	glViewport(0, 0, scr_width, scr_height);
 	camera_.Commit();
 	std::vector<Item*> objects;
 	for (auto& item : items_) {
@@ -141,7 +168,7 @@ void Engine::Draw()
 	if (msaa_) {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, msaaFBO_);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, postProcessFBO_);
-		glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(0, 0, scr_width, scr_height, 0, 0, scr_width, scr_height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO_);

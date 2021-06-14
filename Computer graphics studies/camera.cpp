@@ -70,6 +70,14 @@ glm::mat4 Camera::GetCustomCamera(glm::vec3 position, float yaw, float pitch)
 	
 }
 
+void Camera::UpdateWindowSize(int width, int height)
+{
+	scr_width = width;
+	scr_height = height;
+	aspectRatio = float(width) / float(height);
+	projection_ = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+}
+
 //TODO take enum class
 void Camera::ProcessKeyboard(Translation e, float ellapsed_milliseconds)
 {

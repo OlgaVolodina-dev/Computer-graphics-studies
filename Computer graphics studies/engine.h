@@ -15,9 +15,10 @@ public:
 	void Draw();
 	Camera& GetCamera() { return camera_; }
 	void ShowDepth(bool enable) { showDepth_ = enable; }
+	void SetWindowSize(int width, int height);
 private:
 	void ItemSetting();
-
+	void CreateTextures();
 	bool showDepth_ = false;
 	bool msaa_ = true;
 	GLuint msaaFBO_ = 0U;
@@ -29,15 +30,18 @@ private:
 	Camera camera_;
 	UBO globalUBO_;
 	std::vector<LightSource> lightSources_;
-	ShadowManager shadowManager_;
-	ShaderProgram quadProgram;
-	ShaderProgram bloomPreprocessingProgram_;
-	ShaderProgram bloomPostprocessingProgram_;
-	GLuint bloomTex_;
+
+	GLuint bloomTex_ = 0U;
 	GLuint bloomFBO_;
 	std::vector<Item> items_;
 	GaussianBlur gaussBlur;
 	WaterSimulation water;
+	int scr_width = 800, scr_height= 600;
+
+	ShadowManager shadowManager_;
+	ShaderProgram quadProgram;
+	ShaderProgram bloomPreprocessingProgram_;
+	ShaderProgram bloomPostprocessingProgram_;
 };
 
 #endif

@@ -1,8 +1,6 @@
 #include "WaterSimulation.h"
 #include <iostream>
 
-#define SCR_WIDTH 800
-#define SCR_HEIGHT 600
 #define WAVE_SPEED  0.03f
 WaterSimulation::WaterSimulation():
 	dudv("obj/water/dudv.png"),
@@ -11,28 +9,7 @@ WaterSimulation::WaterSimulation():
 {
 	glGenFramebuffers(1, &fbo);
 
-	glGenTextures(1, &reflectionTex);
-	glBindTexture(GL_TEXTURE_2D, reflectionTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glGenTextures(1, &refractionTex);
-	glBindTexture(GL_TEXTURE_2D, refractionTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-
-	glGenTextures(1, &depthTexture);
-	glBindTexture(GL_TEXTURE_2D, depthTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-		SCR_WIDTH, SCR_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	CreateTextures();
 
 
 	ItemInitializationInfo waterInfo;
@@ -51,8 +28,48 @@ WaterSimulation::WaterSimulation():
 	water->LoadItem();
 
 	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	
+}
 
+void WaterSimulation::UpdateWindowSize(int width, int height)
+{
+	scr_width = width;
+	scr_height = height;
+	CreateTextures();
+}
+
+void WaterSimulation::CreateTextures()
+{
+	if (reflectionTex) {
+		glDeleteTextures(1, &reflectionTex);
+	}
+	glGenTextures(1, &reflectionTex);
+	glBindTexture(GL_TEXTURE_2D, reflectionTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, scr_width, scr_height, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	if (refractionTex) {
+		glDeleteTextures(1, &refractionTex);
+	}
+
+	glGenTextures(1, &refractionTex);
+	glBindTexture(GL_TEXTURE_2D, refractionTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, scr_width, scr_height, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	if (depthTexture) {
+		glDeleteTextures(1, &depthTexture);
+	}
+	glGenTextures(1, &depthTexture);
+	glBindTexture(GL_TEXTURE_2D, depthTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+		scr_width, scr_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 }
 
 WaterSimulation::~WaterSimulation()

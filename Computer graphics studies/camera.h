@@ -37,6 +37,7 @@ public:
 	glm::mat4 GetCustomCamera(glm::vec3 position, float yaw, float pitch);
 	void Commit();
 	void GetProjectionParams(float& fov, float& aspectRatio, float& farPlane, float& nearPlane);
+	void UpdateWindowSize(int width, int height);
 
 private:
 	float fov = 45;
@@ -59,6 +60,7 @@ private:
 	float frame_yaw;
 	glm::vec3 frame_position;
 	glm::vec3 frame_direction;
+	int scr_width = 800, scr_height = 600;
 	
 
 };

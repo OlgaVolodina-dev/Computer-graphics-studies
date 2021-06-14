@@ -16,18 +16,21 @@ public:
 	~WaterSimulation();
 	void PreRender(std::vector<Item*> items, Camera& camera);
 	void Draw();
-	GLuint refractionTex;
-	GLuint reflectionTex;
+	void UpdateWindowSize(int, int);
 private:
+	GLuint reflectionTex = 0;
+	GLuint refractionTex = 0;
+	void CreateTextures();
 	Texture dudv;
 	Texture normalTex;
-	GLuint depthTexture;
+	GLuint depthTexture = 0;
 	GLuint fbo;
 	ShaderProgram simpleColorShader;
 	Item* water = nullptr;
 	float moveFactor = 0.0;
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	bool firstStartTime = true;
+	int scr_width = 800, scr_height = 600;
 };
 
 #endif// WATER_SIMULATION

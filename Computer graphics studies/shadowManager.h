@@ -24,17 +24,20 @@ public:
 	void SetData(std::size_t offset) override;
 	void CascadeMatrixes(Camera&, std::vector <Item*> & objects);
 	constexpr static const int SPLIT_NUMBER = 3;
+	void UpdateWindowSize(int width, int height);
 private:
+	void CreateTextures();
 	glm::mat4 lightProjection_;
 	GLuint UBO_;
 	glm::mat4 lightSpaceMatrix_;
-	GLuint depthTexture_;
-	GLuint vsmTexture_[SPLIT_NUMBER];
+	GLuint depthTexture_ = 0;
+	GLuint vsmTexture_[SPLIT_NUMBER] = { 0, 0, 0 };
 	GLuint depthFBO_;
 	glm::vec3 direction_;
 	glm::mat4 lightView;
 	std::vector<glm::mat4> lightProjMatrixes;
 	bool cascade_shadows = true;
+	int scr_width = 800, scr_height=600;
 };
 
 #endif

@@ -1,20 +1,11 @@
 #include "GaussianBlur.h"
 #include "utils.h"
-#define SCR_WIDTH 800
-#define SCR_HEIGHT 600
+
 
 GaussianBlur::GaussianBlur():
 	one_axis_blur(QUAD_VERT, ONE_AXIS_GAUSSIAN_FRAG)
 {
-	std::cout << __func__ << std::endl;
-	glGenTextures(1, &cacheTex);
-	glBindTexture(GL_TEXTURE_2D, cacheTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	CreateTextures();
 
 	glGenFramebuffers(1, &pingFbo);
 	glGenFramebuffers(1, &pongFbo);
@@ -22,6 +13,27 @@ GaussianBlur::GaussianBlur():
 	glGenVertexArrays(1, &emptyVAO);
 }
 
+void GaussianBlur::CreateTextures()
+{
+	if (cacheTex) {
+		glDeleteTextures(1, &cacheTex);
+	}
+	glGenTextures(1, &cacheTex);
+	glBindTexture(GL_TEXTURE_2D, cacheTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, scr_width, scr_height, 0, GL_RGBA, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void GaussianBlur::UpdateWindowSize(int width, int height)
+{
+	scr_width = width;
+	scr_height = height;
+	CreateTextures();
+}
 
 void GaussianBlur::Blur(GLuint texture, size_t size, size_t iterations, bool generate_mipmap)
 {
