@@ -7,6 +7,7 @@
 #include "shadowManager.h"
 #include "Item.h"
 #include "WaterSimulation.h"
+#include "GaussianBlur.h"
 class Engine
 {
 public:
@@ -35,6 +36,7 @@ private:
 	GLuint bloomTex_;
 	GLuint bloomFBO_;
 	std::vector<Item> items_;
+	GaussianBlur gaussBlur;
 	WaterSimulation water;
 };
 

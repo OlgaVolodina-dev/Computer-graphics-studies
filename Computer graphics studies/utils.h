@@ -3,6 +3,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include "GL/glew.h"
+#include <iostream>
 
 #define CHECK_OPENGL_ERROR() \
 {\

@@ -32,17 +32,24 @@ public:
 	float GetPitch() { return frame_pitch; }
 	float GetYaw() { return frame_yaw; }
 	glm::vec3 GetPosition() { return frame_position; }
+	glm::vec3 GetDirection() { return frame_direction; }
+	glm::vec3 GetUp() { return cameraUp; }
 	glm::mat4 GetCustomCamera(glm::vec3 position, float yaw, float pitch);
 	void Commit();
+	void GetProjectionParams(float& fov, float& aspectRatio, float& farPlane, float& nearPlane);
 
 private:
+	float fov = 45;
+	float aspectRatio = 800.0 / 600.0;
+	float farPlane = 100.0f;
+	float nearPlane = 0.1f;
+
 	void Resolve();
 	bool quatertions_ = false;
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 	glm::vec3 cameraFront;
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	bool firstMouse = true;
-	float fov = 45.0f;
 	glm::mat4 view_;
 	glm::mat4 projection_;
 	float yaw = -90.0f;
@@ -51,6 +58,7 @@ private:
 	float frame_pitch;
 	float frame_yaw;
 	glm::vec3 frame_position;
+	glm::vec3 frame_direction;
 	
 
 };

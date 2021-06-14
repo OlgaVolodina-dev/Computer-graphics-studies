@@ -1,5 +1,9 @@
 #include "shadowManager.h"
+#include <algorithm>
+#include <iostream>
+#define SPLIT_NUMBER 3
 const unsigned int SHADOW_WIDTH = 800, SHADOW_HEIGHT = 600;
+
 
 ShadowManager::ShadowManager(glm::mat4 projview) 
 {
@@ -45,17 +49,60 @@ ShadowManager::ShadowManager(glm::mat4 projview)
 	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
 	direction_ = position - direction;
 	glm::vec3 up = -glm::cross(glm::vec3(1.0, 0.0, 0.0), position - direction);
-	glm::mat4 lightView = glm::lookAt(position,
+	lightView = glm::lookAt(position,
 		position + direction,
 		up);
 
 	lightSpaceMatrix_ = lightProjection_ * lightView;
+}
 
-	glm::mat4 projViewInverse = glm::inverse(projview);
-	glm::mat4 inverseLightView = glm::inverse(lightView);
-
+void ShadowManager::CascadeMatrixes(Camera& camera)
+{
+	float z_fars[SPLIT_NUMBER] = { 0.990362, 0.99678, 1.0 };
 	
+	glm::mat4 projView = camera.GetProjView();
+	glm::mat4 iPV = glm::inverse(projView);
+	lightProjMatrixes.clear();
+	for (int i = 0; i < SPLIT_NUMBER; ++i) {
+		std::vector<glm::vec4> corners{
+			iPV * glm::vec4(-1.0, 1.0,  -1.0, 1.0),
+			iPV * glm::vec4(1.0, 1.0,   -1.0, 1.0),
+			iPV * glm::vec4(-1.0, -1.0, -1.0, 1.0),
+			iPV * glm::vec4(1.0, -1.0,  -1.0, 1.0),
 
+			iPV * glm::vec4(-1.0,  1.0, 0.99, 1.0),
+			iPV * glm::vec4(1.0,  1.0, 0.99, 1.0),
+			iPV * glm::vec4(-1.0, -1.0, 0.99, 1.0),
+			iPV * glm::vec4(1.0, -1.0, 0.99, 1.0)
+		};
+		glm::mat4 lightView_local = lightView;
+		lightView_local[3][0] = 0.0;
+		lightView_local[3][1] = 0.0;
+		lightView_local[3][2] = 0.0;
+
+		float minX = FLT_MAX, maxX = -FLT_MAX, minY = FLT_MAX, maxY = -FLT_MAX, minZ = FLT_MAX, maxZ = -FLT_MAX;
+		for (auto& corner : corners) {
+			corner = corner / glm::vec4(corner.w);
+			glm::vec4 pos = lightView_local * corner;
+			maxX = std::max(pos.x, maxX);
+			maxY = std::max(pos.y, maxY);
+			maxZ = std::max(pos.z, maxZ);
+			minX = std::min(pos.x, minX);
+			minY = std::min(pos.y, minY);
+			minZ = std::min(pos.z, minZ);
+		}
+
+		glm::mat4 proj = glm::mat4(1.0);
+		proj[0][0] = 2.0 / (maxX - minX);
+		proj[1][1] = 2.0 / (maxY - minY);
+		proj[2][2] = 2.0 / (maxZ - minZ);
+		proj[3][3] = 1.0;
+		proj[0][3] = -(minX + maxX) / (maxX - minX);
+		proj[1][3] = -(minY + maxY) / (maxY - minY);
+		proj[2][3] = -(minZ + maxZ) / (maxZ - minZ);
+
+		lightProjMatrixes.push_back(glm::transpose(proj) * lightView_local);
+	}
 }
 
 void ShadowManager::SetDirectionalLight()

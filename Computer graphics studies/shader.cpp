@@ -92,6 +92,11 @@ void WaterFinalFrag(std::string& data) {
 #include "water_final.frag"
 		;
 }
+void OneAxisGaussianBlurFrag(std::string& data) {
+	data =
+#include "one_axis_gaussian.frag"
+		;
+}
 
 std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
 	{SHADERS_OPTIONS::SIMPLE_VERT, &SimpleShaderVert},
@@ -109,6 +114,7 @@ std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSo
 	{SHADERS_OPTIONS::SIMPLE_COLOR_FRAG, &SimpleColorFrag},
 	{SHADERS_OPTIONS::WATER_FINAL_VERT, &WaterFinalVert},
 	{SHADERS_OPTIONS::WATER_FINAL_FRAG, &WaterFinalFrag},
+	{SHADERS_OPTIONS::ONE_AXIS_GAUSSIAN_FRAG, &OneAxisGaussianBlurFrag},
 
 } };
 
@@ -147,7 +153,6 @@ ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS frag
 	std::string fragment_data;
 	(*shaderSourceHandler_[vertex_shader])(vertex_data);
 	(*shaderSourceHandler_[fragment_shader])(fragment_data);
-
 	GLuint vertex = CompileShader(vertex_data, GL_VERTEX_SHADER);
 	GLuint fragment = CompileShader(fragment_data, GL_FRAGMENT_SHADER);
 	int success;

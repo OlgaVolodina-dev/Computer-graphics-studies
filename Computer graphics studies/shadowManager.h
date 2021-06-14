@@ -10,6 +10,7 @@
 #include <vector>
 #include "UBO.h"
 #include "Item.h"
+#include "camera.h"
 
 class ShadowManager final : public IUBOListener
 {
@@ -21,6 +22,7 @@ public:
 	GLuint GetVSMTexture() { return vsmTexture_; }
 	std::size_t GetUBOSize() override;
 	void SetData(std::size_t offset) override;
+	void CascadeMatrixes(Camera&);
 private:
 	glm::mat4 lightProjection_;
 	GLuint UBO_;
@@ -29,6 +31,8 @@ private:
 	GLuint vsmTexture_;
 	GLuint depthFBO_;
 	glm::vec3 direction_;
+	glm::mat4 lightView;
+	std::vector<glm::mat4> lightProjMatrixes;
 };
 
 #endif

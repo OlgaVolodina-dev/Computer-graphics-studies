@@ -11,7 +11,8 @@ Engine::Engine() :
 	quadProgram(QUAD_VERT, QUAD_FRAG),
 	bloomPreprocessingProgram_(QUAD_VERT, BLOOM_PREPROCESSING_FRAG),
 	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG),
-	water()
+	gaussBlur()
+	//water()
 {
 	ItemSetting();
 
@@ -93,6 +94,7 @@ Engine::Engine() :
 void Engine::Draw()
 {	
 	camera_.Commit();
+	//shadowManager_.CascadeMatrixes(camera_);
 	glEnable(GL_DEPTH_TEST);
 	std::vector<Item*> objects;
 	for (auto& item : items_) {
@@ -105,6 +107,8 @@ void Engine::Draw()
 	if (showDepth_) {
 		return;
 	}
+	gaussBlur.Blur(shadowManager_.GetVSMTexture(), 1, 3);
+
 	water.PreRender(objects, camera_);
 
 	if (msaa_) {
@@ -115,6 +119,7 @@ void Engine::Draw()
 	glClearColor(0.005f, 0.015f, 0.026f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	globalUBO_.UpdateUBO();
+	
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture());
 	for (auto& item : items_) {

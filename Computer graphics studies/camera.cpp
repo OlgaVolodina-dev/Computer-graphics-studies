@@ -10,12 +10,21 @@ Camera::Camera():
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(front);
 	view_ = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-	projection_ = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+	projection_ = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
+	glm::vec4 test = projection_ * glm::vec4(0.0, 0.0, -17.2, 1.0);
+	std::cout << test[0] / test[3] << " " << test[1] / test[3] << " " <<test[2] / test[3] << std::endl;
 }
 
 Camera::~Camera()
 {}
 
+void Camera::GetProjectionParams(float& fov, float& aspectRatio, float& farPlane, float& nearPlane)
+{
+	fov = this->fov;
+	aspectRatio = this->aspectRatio;
+	farPlane = this->farPlane;
+	nearPlane = this->nearPlane;
+}
 //TODO matrix in stuct
 void Camera::SetData(std::size_t offset)
 {
@@ -41,6 +50,7 @@ void Camera::Commit()
 	frame_pitch = pitch;
 	frame_yaw = yaw;
 	frame_position = cameraPos;
+	frame_direction = cameraFront;
 }
 
 void Camera::Resolve()

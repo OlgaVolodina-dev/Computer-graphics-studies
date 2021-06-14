@@ -19,26 +19,26 @@ void Engine::ItemSetting()
 
 	items_.push_back(terrain);
 
-	//ItemInitializationInfo hornInfo;
-	//hornInfo.obj_file_name = "obj/Horn/Horn.obj";
-	//hornInfo.colorTexName = "obj/Horn/Horn_BaseColor.png";
-	//hornInfo.metallicTexName = "obj/Horn/Horn_Metallic.png";
-	//hornInfo.vert = PHONG_VERT;
-	//hornInfo.frag = HORN_FRAG;
-	//
-	//Item horn(hornInfo);
+	ItemInitializationInfo hornInfo;
+	hornInfo.obj_file_name = "obj/Horn/Horn.obj";
+	hornInfo.colorTexName = "obj/Horn/Horn_BaseColor.png";
+	hornInfo.metallicTexName = "obj/Horn/Horn_Metallic.png";
+	hornInfo.vert = PHONG_VERT;
+	hornInfo.frag = HORN_FRAG;
+	
+	Item horn(hornInfo);
 
-	//ItemModelPositionInfo& hornModelInfo = horn.GetWriteableModelInfo();
-	//hornModelInfo.position_ = { glm::vec3(0.0, 0.0, 4.0) };
-	//hornModelInfo.scale_ = { 0.5 };
+	ItemModelPositionInfo& hornModelInfo = horn.GetWriteableModelInfo();
+	hornModelInfo.position_ = { glm::vec3(0.0, 0.0, 4.0) };
+	hornModelInfo.scale_ = { 0.5 };
 
-	//items_.push_back(horn);
+	items_.push_back(horn);
 	
 	ItemInitializationInfo cubeInfo;
 	cubeInfo.obj_file_name = "obj/cube/cube.obj";
 	cubeInfo.colorTexName = "obj/cube/cube_BaseColor.jpg";
 	cubeInfo.vert = PHONG_VERT;
-	cubeInfo.frag = HORN_FRAG;
+	cubeInfo.frag = PHONG_FRAG;
 	cubeInfo.n_indices = 10;
 	cubeInfo.colorTexGenerateMipmap = true;
 
