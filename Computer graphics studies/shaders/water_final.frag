@@ -2,7 +2,7 @@ R"(#version 440 core
 
 layout (location = 0) uniform float moveFactor;
 
-layout(std140, binding = 2) uniform GlobalMatrices
+layout(std140, binding = 0) uniform GlobalMatrices
 {
     mat4 view;
     mat4 projection;

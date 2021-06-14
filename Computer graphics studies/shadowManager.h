@@ -11,18 +11,19 @@
 #include "UBO.h"
 #include "Item.h"
 #include "camera.h"
+#include <memory>
 
 class ShadowManager final : public IUBOListener
 {
 public:
 	ShadowManager(glm::mat4 projview);
 	void SetDirectionalLight();
-	void ShadowPrepass(std::vector<Item *> &, bool);
+	void ShadowPrepass(std::vector<std::shared_ptr<Item>>& objs, bool);
 	GLuint GetDepthTexture();
 	GLuint* GetVSMTexture() { return vsmTexture_; }
 	std::size_t GetUBOSize() override;
 	void SetData(std::size_t offset) override;
-	void CascadeMatrixes(Camera&, std::vector <Item*> & objects);
+	void CascadeMatrixes(Camera& camera, std::vector<std::shared_ptr<Item>>& objects);
 	constexpr static const int SPLIT_NUMBER = 3;
 	void UpdateWindowSize(int width, int height);
 private:

@@ -122,11 +122,6 @@ void ShaderProgram::Use() {
 	glUseProgram(program_);
 }
 
-ShaderProgram::~ShaderProgram()
-{
-	//glDeleteProgram(program_);
-}
-
 GLuint  ShaderProgram::CompileShader(std::string& data, GLenum shader_t) {
 	struct StringHelper {
 		const char* p;

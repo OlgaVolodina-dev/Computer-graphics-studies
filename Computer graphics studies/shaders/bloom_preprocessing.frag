@@ -1,4 +1,4 @@
-R"(#version 420 core
+R"(#version 440 core
 in vec2 texCoord;
 out vec4 FragColor;
 layout(binding = 0) uniform sampler2D colorTex;

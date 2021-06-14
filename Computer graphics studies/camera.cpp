@@ -12,7 +12,7 @@ Camera::Camera():
 	view_ = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 	projection_ = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 	glm::vec4 test = projection_ * glm::vec4(0.0, 0.0, -17.2, 1.0);
-	std::cout << test[0] / test[3] << " " << test[1] / test[3] << " " <<test[2] / test[3] << std::endl;
+	//std::cout << test[0] / test[3] << " " << test[1] / test[3] << " " <<test[2] / test[3] << std::endl;
 }
 
 Camera::~Camera()
@@ -81,7 +81,7 @@ void Camera::UpdateWindowSize(int width, int height)
 //TODO take enum class
 void Camera::ProcessKeyboard(Translation e, float ellapsed_milliseconds)
 {
-	const float cameraSpeed = 10.0f * ellapsed_milliseconds / 1000.0;
+	const float cameraSpeed = 7.0f * ellapsed_milliseconds / 1000.0;
 	switch (e)
 	{
 	case FORWARD:

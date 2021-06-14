@@ -10,14 +10,13 @@ Engine::Engine() :
 	quadProgram(QUAD_VERT, QUAD_FRAG),
 	bloomPreprocessingProgram_(QUAD_VERT, BLOOM_PREPROCESSING_FRAG),
 	bloomPostprocessingProgram_(QUAD_VERT, BLOOM_POSTPROCESSING_FRAG),
-	gaussBlur()
+	gaussBlur(), 
+	lightSources_{ LightSource(glm::vec3(0.0f, 0.0f, 5.0f)) , LightSource(glm::vec3(-3.0f, 1.0f, -0.0f))}
 {
 	ItemSetting();
 
 	// Order matters!
 	globalUBO_.RegisterListener(camera_);
-	lightSources_.push_back(LightSource(glm::vec3(0.0f, 0.0f, 5.0f)));
-	lightSources_.push_back(LightSource(glm::vec3(-3.0f, 1.0f, -0.0f)));
 	// if lightSource will be deleted?
 	for (auto& lightSource : lightSources_) {
 		globalUBO_.RegisterListener(lightSource);
@@ -26,7 +25,7 @@ Engine::Engine() :
 
 	globalUBO_.Setup();
 	for (auto& item : items_) {
-		item.LoadItem();
+		item->LoadItem();
 	}
 	glGenFramebuffers(1, &postProcessFBO_);
 	glGenFramebuffers(1, &bloomFBO_);
@@ -124,15 +123,11 @@ void Engine::Draw()
 {	
 	glViewport(0, 0, scr_width, scr_height);
 	camera_.Commit();
-	std::vector<Item*> objects;
-	for (auto& item : items_) {
-		objects.push_back(&item);
-	}
-	shadowManager_.CascadeMatrixes(camera_, objects);
+	shadowManager_.CascadeMatrixes(camera_, items_);
 	glEnable(GL_DEPTH_TEST);
 
 
-	shadowManager_.ShadowPrepass(objects, showDepth_);
+	shadowManager_.ShadowPrepass(items_, showDepth_);
 	if (showDepth_) {
 		return;
 	}
@@ -140,7 +135,7 @@ void Engine::Draw()
 	gaussBlur.Blur(shadowManager_.GetVSMTexture()[1], 1, 1, false);
 	//gaussBlur.Blur(shadowManager_.GetVSMTexture()[2], 1, 1, false);
 
-	water.PreRender(objects, camera_);
+	water.PreRender(items_, camera_);
 
 	if (msaa_) {
 		glBindFramebuffer(GL_FRAMEBUFFER, msaaFBO_);
@@ -158,7 +153,7 @@ void Engine::Draw()
 	glActiveTexture(GL_TEXTURE8);
 	glBindTexture(GL_TEXTURE_2D, shadowManager_.GetVSMTexture()[2]);
 	for (auto& item : items_) {
-		item.Draw();
+		item->Draw();
 	}
 	water.Draw();
 	for (auto& lightSource : lightSources_) {

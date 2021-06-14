@@ -38,7 +38,6 @@ class ShaderProgram
 {
 public:
 	ShaderProgram(SHADERS_OPTIONS, SHADERS_OPTIONS);
-	~ShaderProgram();
 	ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS TC, SHADERS_OPTIONS TES, SHADERS_OPTIONS fragment_shader);
 	void Use();
 	operator GLuint() { return program_; };

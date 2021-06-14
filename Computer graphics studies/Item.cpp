@@ -53,10 +53,9 @@ void Item::LoadItem()
 		glEnableVertexAttribArray(i + 3);
 		glVertexAttribDivisor(i + 3, 1);
 	}
-	//dirty for gloabal UBO
 	glUniformBlockBinding(shader_, 0U, 0U);
 
-	CalculateBoundingBoxes();
+	//CalculateBoundingBoxes();
 }
 
 
@@ -113,6 +112,5 @@ void Item::CalculateBoundingBoxes()
 		bb_world_item.minY = min.y;
 		bb_world_item.minZ = min.z;
 		bb_world.push_back(bb_world_item);
-		std::cout << max.y << std::endl;
 	}
 }

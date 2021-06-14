@@ -7,7 +7,6 @@ void IUBOListener::SetData(std::size_t offset) {}
 UBO::UBO()
 {
 	glGenBuffers(1, &buffer_);
-
 }
 
 void UBO::Setup()
@@ -41,4 +40,6 @@ void UBO::UpdateUBO()
 		listener->SetData(offset);
 		offset += listener->GetUBOSize();
 	}
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, buffer_);
+
 }

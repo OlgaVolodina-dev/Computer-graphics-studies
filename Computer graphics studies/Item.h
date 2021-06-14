@@ -35,6 +35,11 @@ class Item
 public:
 	Item(ItemInitializationInfo& info);
 	~Item();
+	Item(Item&) = delete;
+	Item(const Item&) = delete;
+	Item& operator=(Item&) = delete;
+	Item& operator=(const Item&) = delete;
+
 	void LoadItem();
 	void Draw();
 	void DrawSimple();

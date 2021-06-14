@@ -8,13 +8,14 @@
 #include "texture.h"
 #include "shader.h"
 #include <chrono>
+#include <memory>
 
 class WaterSimulation
 {
 public:
 	WaterSimulation();
 	~WaterSimulation();
-	void PreRender(std::vector<Item*> items, Camera& camera);
+	void PreRender(std::vector<std::shared_ptr<Item>> items, Camera& camera);
 	void Draw();
 	void UpdateWindowSize(int, int);
 private:

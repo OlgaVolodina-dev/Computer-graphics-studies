@@ -74,11 +74,11 @@ void WaterSimulation::CreateTextures()
 
 WaterSimulation::~WaterSimulation()
 {
-	std::cout << "~WaterSimulation" << std::endl;
+	//std::cout << "~WaterSimulation" << std::endl;
 	free(water);
 }
 
-void WaterSimulation::PreRender(std::vector<Item*> items, Camera& camera)
+void WaterSimulation::PreRender(std::vector<std::shared_ptr<Item>> items, Camera& camera)
 {
 	glEnable(GL_CLIP_DISTANCE0);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);

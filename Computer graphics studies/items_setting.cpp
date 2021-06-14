@@ -11,9 +11,9 @@ void Engine::ItemSetting()
 	terrainInfo.frag = PHONG_FRAG;
 	terrainInfo.shadowCaster = true;
 
-	Item terrain(terrainInfo);
+	auto terrain = std::make_shared<Item>(terrainInfo);
 
-	ItemModelPositionInfo& terrainModelInfo = terrain.GetWriteableModelInfo();
+	ItemModelPositionInfo& terrainModelInfo = terrain->GetWriteableModelInfo();
 	terrainModelInfo.scale_ = { 0.01 };
 	terrainModelInfo.position_ = { glm::vec3(0.0, -11.0, 0.0) };
 
@@ -26,9 +26,9 @@ void Engine::ItemSetting()
 	hornInfo.vert = PHONG_VERT;
 	hornInfo.frag = HORN_FRAG;
 	
-	Item horn(hornInfo);
+	auto horn = std::make_shared<Item>(hornInfo);
 
-	ItemModelPositionInfo& hornModelInfo = horn.GetWriteableModelInfo();
+	ItemModelPositionInfo& hornModelInfo = horn->GetWriteableModelInfo();
 	hornModelInfo.position_ = { glm::vec3(0.0, 0.0, 4.0) };
 	hornModelInfo.scale_ = { 0.5 };
 
@@ -42,9 +42,9 @@ void Engine::ItemSetting()
 	cubeInfo.n_indices = 10;
 	cubeInfo.colorTexGenerateMipmap = true;
 
-	Item cube(cubeInfo);
+	auto cube = std::make_shared<Item>(cubeInfo);
 
-	ItemModelPositionInfo& cubeModelInfo = cube.GetWriteableModelInfo();
+	ItemModelPositionInfo& cubeModelInfo = cube->GetWriteableModelInfo();
 	cubeModelInfo.position_ = {
 		{glm::vec3(0.0f,  0.0f,  0.0f)},
 		{glm::vec3(2.0f,  5.0f, -15.0f)},

@@ -33,7 +33,7 @@ ShadowManager::ShadowManager(glm::mat4 projview)
 	lightSpaceMatrix_ = lightProjection_ * lightView;
 }
 
-void ShadowManager::CascadeMatrixes(Camera& camera, std::vector<Item *>& objects)
+void ShadowManager::CascadeMatrixes(Camera& camera, std::vector<std::shared_ptr<Item>>& objects)
 {
 	float z_fars[SPLIT_NUMBER+1] = { 0.0, 0.99036, 0.99678, 1.0 };
 	
@@ -151,7 +151,7 @@ void ShadowManager::UpdateWindowSize(int width, int height)
 	CreateTextures();
 }
 
-void ShadowManager::ShadowPrepass(std::vector<Item*>& objects, bool showDepth)
+void ShadowManager::ShadowPrepass(std::vector<std::shared_ptr<Item>>& objects, bool showDepth)
 {
 	for (int i = 0; i < SPLIT_NUMBER; ++i) {
 		glBindFramebuffer(GL_FRAMEBUFFER, depthFBO_);
@@ -163,6 +163,8 @@ void ShadowManager::ShadowPrepass(std::vector<Item*>& objects, bool showDepth)
 		glBindBuffer(GL_UNIFORM_BUFFER, UBO_);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(glm::mat4), glm::value_ptr(lightProjMatrixes[i]));
 		glBindBufferRange(GL_UNIFORM_BUFFER, 0, UBO_, 0, sizeof(glm::mat4));
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, UBO_);
+
 
 		glViewport(0, 0, scr_width, scr_height);
 		GLint fbo = showDepth ? 0 : depthFBO_;

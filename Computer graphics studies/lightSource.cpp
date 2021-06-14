@@ -10,6 +10,7 @@ LightSource::LightSource(glm::vec3 position):
     color_(glm::vec3(1.0f)), 
     initial_y(position.y)
 {
+    
     const float vertices[] = {
         -0.5f, -0.5f, -0.5f,
          0.5f, -0.5f, -0.5f, 

@@ -1,4 +1,4 @@
-R"(#version 420 core
+R"(#version 440 core
 out vec4 FragColor;
   
 void main()

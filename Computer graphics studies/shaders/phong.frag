@@ -1,5 +1,5 @@
-R"(#version 420 core
-layout(std140, binding = 2) uniform GlobalMatrices
+R"(#version 440 core
+layout(std140, binding = 0) uniform GlobalMatrices
 {
     mat4 view;
     mat4 projection;

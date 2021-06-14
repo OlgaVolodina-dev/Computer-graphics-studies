@@ -11,7 +11,7 @@ Texture::Texture(std::string path, bool generateMipMap)
 	unsigned char* data = stbi_load(path.data(), &width, &height, &nrChannels, 0);
 
 	if (!data) {
-		std::cout << "Load texture failed" << path << std::endl;
+		std::cout << "Load texture failed" <<  " " << path << std::endl;
 		return;
 	}
 	glGenTextures(1, &texture_);

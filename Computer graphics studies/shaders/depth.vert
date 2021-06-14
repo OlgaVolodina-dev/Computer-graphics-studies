@@ -1,4 +1,4 @@
-R"(#version 420 core
+R"(#version 440 core
 layout (location = 0) in vec3 aPos;
 layout (location = 3) in mat4 modelTransform;
 layout(std140, binding = 0) uniform GlobalMatrices

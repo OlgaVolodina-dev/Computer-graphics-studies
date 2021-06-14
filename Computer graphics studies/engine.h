@@ -8,6 +8,7 @@
 #include "Item.h"
 #include "WaterSimulation.h"
 #include "GaussianBlur.h"
+#include <memory>
 class Engine
 {
 public:
@@ -33,7 +34,7 @@ private:
 
 	GLuint bloomTex_ = 0U;
 	GLuint bloomFBO_;
-	std::vector<Item> items_;
+	std::vector<std::shared_ptr<Item>> items_;
 	GaussianBlur gaussBlur;
 	WaterSimulation water;
 	int scr_width = 800, scr_height= 600;
