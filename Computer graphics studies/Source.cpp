@@ -2,29 +2,32 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include "engine.h"
+#include <chrono>
 
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
+
 Engine& GetEngine()
 {
     static Engine engine;
     return engine;
 }
-void processInput(GLFWwindow* window)
+void processInput(GLFWwindow* window, float elapsed_milliseconds)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        GetEngine().GetCamera().ProcessKeyboard(Camera::FORWARD);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::FORWARD, elapsed_milliseconds);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        GetEngine().GetCamera().ProcessKeyboard(Camera::BACKWARD);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::BACKWARD, elapsed_milliseconds);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        GetEngine().GetCamera().ProcessKeyboard(Camera::LEFT);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::LEFT, elapsed_milliseconds);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        GetEngine().GetCamera().ProcessKeyboard(Camera::RIGHT);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::RIGHT, elapsed_milliseconds);
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
         GetEngine().ShowDepth(true);
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
@@ -68,14 +71,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 int main()
 {
-
     // glfw: initialize and configure
     // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
-
+    start = std::chrono::steady_clock::now();
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
@@ -93,9 +95,12 @@ int main()
 
     while (!glfwWindowShouldClose(window))
     {
+        auto timePoint = std::chrono::steady_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(timePoint - start);
+        start = timePoint;
         // input
         // -----
-        processInput(window);
+        processInput(window, elapsed.count());
         
         // render
         // ------

@@ -3,98 +3,98 @@
 
 void HornShaderFrag(std::string& data) {
 	data =
-#include "horn.frag"
+#include "shaders/horn.frag"
 	;
 }
 
 void BloomPreprocessingShaderFrag(std::string& data) {
 	data =
-#include "bloom_preprocessing.frag"
+#include "shaders/bloom_preprocessing.frag"
 	;
 }
 
 void BloomPostprocessingShaderFrag(std::string& data) {
 	data =
-#include "bloom_postprocessing.frag"
+#include "shaders/bloom_postprocessing.frag"
 	;
 }
 
 
 void QuadShaderVert(std::string& data) {
 	data =
-#include "quad.vert"
+#include "shaders/quad.vert"
 	;
 }
 
 void QuadShaderFrag(std::string& data) {
 	data =
-#include "quad.frag"
+#include "shaders/quad.frag"
 	;
 }
 
 
 void DepthPassShaderVert(std::string& data) {
 	data =
-#include "depth.vert"
+#include "shaders/depth.vert"
 		;
 }
 
 void DepthPassShaderFrag(std::string& data) {
 	data =
-#include "depth.frag"
+#include "shaders/depth.frag"
 		;
 }
 
 void SimpleShaderVert(std::string& data) {
 	data =
-#include "simple.vert"
+#include "shaders/simple.vert"
 	;
 }
 
 void SimpleShaderFrag(std::string& data) {
 	data =
-#include "simple.frag"
+#include "shaders/simple.frag"
 	;
 }
 
 void PhongShaderVert(std::string& data) {
 	data =
-#include "phong.vert"
+#include "shaders/phong.vert"
 		;
 }
 
 void PhongShaderFrag(std::string& data) {
 	data =
-#include "phong.frag"
+#include "shaders/phong.frag"
 		;
 }
 
 void SimpleColorVert(std::string& data) {
 	data =
-#include "simple_color.vert"
+#include "shaders/simple_color.vert"
 		;
 }
 
 void SimpleColorFrag(std::string& data) {
 	data =
-#include "simple_color.frag"
+#include "shaders/simple_color.frag"
 		;
 }
 
 void WaterFinalVert(std::string& data) {
 	data =
-#include "water_final.vert"
+#include "shaders/water_final.vert"
 		;
 }
 
 void WaterFinalFrag(std::string& data) {
 	data =
-#include "water_final.frag"
+#include "shaders/water_final.frag"
 		;
 }
 void OneAxisGaussianBlurFrag(std::string& data) {
 	data =
-#include "one_axis_gaussian.frag"
+#include "shaders/one_axis_gaussian.frag"
 		;
 }
 

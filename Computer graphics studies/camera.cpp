@@ -51,6 +51,7 @@ void Camera::Commit()
 	frame_yaw = yaw;
 	frame_position = cameraPos;
 	frame_direction = cameraFront;
+	//std::cout << pitch << " " << yaw << " " << cameraPos.x << " " << cameraPos.y << " " << cameraPos.z << std::endl;
 }
 
 void Camera::Resolve()
@@ -70,9 +71,9 @@ glm::mat4 Camera::GetCustomCamera(glm::vec3 position, float yaw, float pitch)
 }
 
 //TODO take enum class
-void Camera::ProcessKeyboard(Translation e)
+void Camera::ProcessKeyboard(Translation e, float ellapsed_milliseconds)
 {
-	const float cameraSpeed = 0.05f;
+	const float cameraSpeed = 7.0f * ellapsed_milliseconds / 1000.0;
 	switch (e)
 	{
 	case FORWARD:
