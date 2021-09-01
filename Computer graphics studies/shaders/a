@@ -1,9 +1,0 @@
-third parties\glew-2.1.0\bin\Release\x64;$(ExecutablePath)
-
-
-third parties\glfw\include;third parties\glm;third parties\glew-2.1.0\include;third parties\stb;third parties\glew-2.1.0\bin\Release\x64;third parties;$(IncludePath)
-
-third parties\glfw\lib-vc2019;third parties\glew-2.1.0\lib\Release\x64;$(LibraryPath)
-
-
-PATH=third parties\glew-2.1.0\bin\Release\x64;%PATH%
