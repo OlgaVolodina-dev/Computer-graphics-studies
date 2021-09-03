@@ -1,6 +1,5 @@
 #include "UBO.h"
 
-
 std::size_t IUBOListener::GetUBOSize() { return 0; }
 void IUBOListener::SetData(std::size_t offset) {}
 

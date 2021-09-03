@@ -11,11 +11,11 @@
 class Camera final: public IUBOListener
 {
 public:
-	enum Translation {
-	FORWARD, 
-	BACKWARD, 
-	LEFT,
-	RIGHT
+	enum class Translation {
+		FORWARD = 0, 
+		BACKWARD, 
+		LEFT,
+		RIGHT
 	};
 
 	Camera();

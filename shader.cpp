@@ -7,19 +7,6 @@ void HornShaderFrag(std::string& data) {
 	;
 }
 
-void BloomPreprocessingShaderFrag(std::string& data) {
-	data =
-#include "shaders/bloom_preprocessing.frag"
-	;
-}
-
-void BloomPostprocessingShaderFrag(std::string& data) {
-	data =
-#include "shaders/bloom_postprocessing.frag"
-	;
-}
-
-
 void QuadShaderVert(std::string& data) {
 	data =
 #include "shaders/quad.vert"
@@ -31,7 +18,6 @@ void QuadShaderFrag(std::string& data) {
 #include "shaders/quad.frag"
 	;
 }
-
 
 void DepthPassShaderVert(std::string& data) {
 	data =
@@ -92,19 +78,12 @@ void WaterFinalFrag(std::string& data) {
 #include "shaders/water_final.frag"
 		;
 }
-void OneAxisGaussianBlurFrag(std::string& data) {
-	data =
-#include "shaders/one_axis_gaussian.frag"
-		;
-}
 
 std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
 	{SHADERS_OPTIONS::SIMPLE_VERT, &SimpleShaderVert},
 	{SHADERS_OPTIONS::SIMPLE_FRAG, &SimpleShaderFrag},
 	{SHADERS_OPTIONS::PHONG_VERT, &PhongShaderVert},
 	{SHADERS_OPTIONS::PHONG_FRAG, &PhongShaderFrag},
-	{SHADERS_OPTIONS::BLOOM_PREPROCESSING_FRAG, &BloomPreprocessingShaderFrag},
-	{SHADERS_OPTIONS::BLOOM_POSTPROCESSING_FRAG, &BloomPostprocessingShaderFrag},
 	{SHADERS_OPTIONS::DEPTH_PASS_VERT, &DepthPassShaderVert},
 	{SHADERS_OPTIONS::DEPTH_PASS_FRAG, &DepthPassShaderFrag},
 	{SHADERS_OPTIONS::QUAD_VERT, &QuadShaderVert},
@@ -114,7 +93,6 @@ std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSo
 	{SHADERS_OPTIONS::SIMPLE_COLOR_FRAG, &SimpleColorFrag},
 	{SHADERS_OPTIONS::WATER_FINAL_VERT, &WaterFinalVert},
 	{SHADERS_OPTIONS::WATER_FINAL_FRAG, &WaterFinalFrag},
-	{SHADERS_OPTIONS::ONE_AXIS_GAUSSIAN_FRAG, &OneAxisGaussianBlurFrag},
 
 } };
 
@@ -144,6 +122,7 @@ GLuint  ShaderProgram::CompileShader(std::string& data, GLenum shader_t) {
 
 ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS fragment_shader)
 {
+	std::cout << "ShaderProgram" << shaderSourceHandler_.size()<< std::endl;
 	std::string vertex_data;
 	std::string fragment_data;
 	(*shaderSourceHandler_[vertex_shader])(vertex_data);
@@ -167,6 +146,8 @@ ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS frag
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
+	std::cout << "ShaderProgram exit" << std::endl;
+
 }
 
 ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS TC, SHADERS_OPTIONS TES, SHADERS_OPTIONS fragment_shader)

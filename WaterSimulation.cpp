@@ -3,14 +3,13 @@
 
 #define WAVE_SPEED  0.03f
 WaterSimulation::WaterSimulation():
-	dudv("obj/water/dudv.png"),
-	normalTex("obj/water/water_Normal.png"),
+	dudv("obj/water/dudv.png", false),
+	normalTex("obj/water/water_Normal.png", false),
 	simpleColorShader(SIMPLE_COLOR_VERT, SIMPLE_COLOR_FRAG)
 {
 	glGenFramebuffers(1, &fbo);
 
 	CreateTextures();
-
 
 	ItemInitializationInfo waterInfo;
 	waterInfo.obj_file_name = "obj/water/water.obj";
@@ -19,7 +18,7 @@ WaterSimulation::WaterSimulation():
 	waterInfo.frag = WATER_FINAL_FRAG;
 	waterInfo.shadowCaster = false;
 
-	water = new Item(waterInfo);
+	water.reset(new Item(waterInfo));
 
 	ItemModelPositionInfo& waterModelInfo = water->GetWriteableModelInfo();
 	waterModelInfo.scale_ = { 50.0 };
@@ -27,7 +26,6 @@ WaterSimulation::WaterSimulation():
 
 	water->LoadItem();
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 }
 
 void WaterSimulation::UpdateWindowSize(int width, int height)
@@ -39,31 +37,28 @@ void WaterSimulation::UpdateWindowSize(int width, int height)
 
 void WaterSimulation::CreateTextures()
 {
-	if (reflectionTex) {
-		glDeleteTextures(1, &reflectionTex);
+	if (!reflectionTex) {
+		glGenTextures(1, &reflectionTex);
 	}
-	glGenTextures(1, &reflectionTex);
 	glBindTexture(GL_TEXTURE_2D, reflectionTex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, scr_width, scr_height, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	if (refractionTex) {
-		glDeleteTextures(1, &refractionTex);
+	if (!refractionTex) {
+		glGenTextures(1, &refractionTex);
 	}
 
-	glGenTextures(1, &refractionTex);
 	glBindTexture(GL_TEXTURE_2D, refractionTex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, scr_width, scr_height, 0, GL_RGBA, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	if (depthTexture) {
-		glDeleteTextures(1, &depthTexture);
+	if (!depthTexture) {
+		glGenTextures(1, &depthTexture);
 	}
-	glGenTextures(1, &depthTexture);
 	glBindTexture(GL_TEXTURE_2D, depthTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		scr_width, scr_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -73,12 +68,9 @@ void WaterSimulation::CreateTextures()
 }
 
 WaterSimulation::~WaterSimulation()
-{
-	//std::cout << "~WaterSimulation" << std::endl;
-	free(water);
-}
+{}
 
-void WaterSimulation::PreRender(std::vector<std::shared_ptr<Item>> items, Camera& camera)
+void WaterSimulation::PreRender(std::vector<std::unique_ptr<Item>> &items, Camera& camera)
 {
 	glEnable(GL_CLIP_DISTANCE0);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
@@ -129,5 +121,4 @@ void WaterSimulation::Draw() {
 	dudv.Use(5);
 	normalTex.Use(6);
 	water->Draw();
-
 }

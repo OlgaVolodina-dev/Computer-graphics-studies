@@ -20,18 +20,14 @@ void processInput(GLFWwindow* window, float elapsed_milliseconds)
     }
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        GetEngine().GetCamera().ProcessKeyboard(Camera::FORWARD, elapsed_milliseconds);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::Translation::FORWARD, elapsed_milliseconds);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        GetEngine().GetCamera().ProcessKeyboard(Camera::BACKWARD, elapsed_milliseconds);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::Translation::BACKWARD, elapsed_milliseconds);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        GetEngine().GetCamera().ProcessKeyboard(Camera::LEFT, elapsed_milliseconds);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::Translation::LEFT, elapsed_milliseconds);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        GetEngine().GetCamera().ProcessKeyboard(Camera::RIGHT, elapsed_milliseconds);
-    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
-        GetEngine().ShowDepth(true);
-    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
-        GetEngine().ShowDepth(false);
+        GetEngine().GetCamera().ProcessKeyboard(Camera::Translation::RIGHT, elapsed_milliseconds);
 }
 
 float lastX = 400, lastY = 300;

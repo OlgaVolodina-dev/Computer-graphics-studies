@@ -11,13 +11,13 @@ void Engine::ItemSetting()
 	terrainInfo.frag = PHONG_FRAG;
 	terrainInfo.shadowCaster = true;
 
-	auto terrain = std::make_shared<Item>(terrainInfo);
+	std::unique_ptr<Item> terrain(new Item(terrainInfo));
 
 	ItemModelPositionInfo& terrainModelInfo = terrain->GetWriteableModelInfo();
 	terrainModelInfo.scale_ = { 0.01 };
 	terrainModelInfo.position_ = { glm::vec3(0.0, -11.0, 0.0) };
 
-	items_.push_back(terrain);
+	items_.push_back(std::move(terrain));
 
 	ItemInitializationInfo hornInfo;
 	hornInfo.obj_file_name = "obj/Horn/Horn.obj";
@@ -26,13 +26,13 @@ void Engine::ItemSetting()
 	hornInfo.vert = PHONG_VERT;
 	hornInfo.frag = HORN_FRAG;
 	
-	auto horn = std::make_shared<Item>(hornInfo);
+	std::unique_ptr<Item> horn(new Item(hornInfo));
 
 	ItemModelPositionInfo& hornModelInfo = horn->GetWriteableModelInfo();
 	hornModelInfo.position_ = { glm::vec3(0.0, 0.0, 4.0) };
 	hornModelInfo.scale_ = { 0.5 };
 
-	items_.push_back(horn);
+	items_.push_back(std::move(horn));
 	
 	ItemInitializationInfo cubeInfo;
 	cubeInfo.obj_file_name = "obj/cube/cube.obj";
@@ -42,7 +42,7 @@ void Engine::ItemSetting()
 	cubeInfo.n_indices = 10;
 	cubeInfo.colorTexGenerateMipmap = true;
 
-	auto cube = std::make_shared<Item>(cubeInfo);
+	std::unique_ptr<Item> cube(new Item(cubeInfo));
 
 	ItemModelPositionInfo& cubeModelInfo = cube->GetWriteableModelInfo();
 	cubeModelInfo.position_ = {
@@ -66,7 +66,7 @@ void Engine::ItemSetting()
 		cubeModelInfo.scale_.push_back(1.0);
 	}
 
-	items_.push_back(cube);
+	items_.push_back(std::move(cube));
 
 
 

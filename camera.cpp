@@ -12,7 +12,6 @@ Camera::Camera():
 	view_ = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 	projection_ = glm::perspective(glm::radians(fov), aspectRatio, nearPlane, farPlane);
 	glm::vec4 test = projection_ * glm::vec4(0.0, 0.0, -17.2, 1.0);
-	//std::cout << test[0] / test[3] << " " << test[1] / test[3] << " " <<test[2] / test[3] << std::endl;
 }
 
 Camera::~Camera()
@@ -51,7 +50,6 @@ void Camera::Commit()
 	frame_yaw = yaw;
 	frame_position = cameraPos;
 	frame_direction = cameraFront;
-	//std::cout << pitch << " " << yaw << " " << cameraPos.x << " " << cameraPos.y << " " << cameraPos.z << std::endl;
 }
 
 void Camera::Resolve()
@@ -84,16 +82,16 @@ void Camera::ProcessKeyboard(Translation e, float ellapsed_milliseconds)
 	const float cameraSpeed = 7.0f * ellapsed_milliseconds / 1000.0;
 	switch (e)
 	{
-	case FORWARD:
+	case Translation::FORWARD:
 		cameraPos += cameraSpeed * cameraFront;
 		break;
-	case BACKWARD:
+	case Translation::BACKWARD:
 		cameraPos -= cameraSpeed * cameraFront;
 		break;
-	case LEFT:
+	case Translation::LEFT:
 		cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
-	case RIGHT:
+	case Translation::RIGHT:
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 		break;
 	default:

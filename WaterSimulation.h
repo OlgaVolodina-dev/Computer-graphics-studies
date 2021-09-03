@@ -15,7 +15,7 @@ class WaterSimulation
 public:
 	WaterSimulation();
 	~WaterSimulation();
-	void PreRender(std::vector<std::shared_ptr<Item>> items, Camera& camera);
+	void PreRender(std::vector<std::unique_ptr<Item>> &items, Camera& camera);
 	void Draw();
 	void UpdateWindowSize(int, int);
 private:
@@ -27,7 +27,7 @@ private:
 	GLuint depthTexture = 0;
 	GLuint fbo;
 	ShaderProgram simpleColorShader;
-	Item* water = nullptr;
+	std::unique_ptr<Item> water = nullptr;
 	float moveFactor = 0.0;
 	std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
 	bool firstStartTime = true;

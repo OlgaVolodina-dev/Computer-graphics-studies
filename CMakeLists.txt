@@ -14,18 +14,22 @@ find_package(GLFW NAMES glfw3 PATHS "${CMAKE_CURRENT_SOURCE_DIR}/third parties/g
 # add the executable
 add_executable(cg
     camera.cpp
-    GaussianBlur.cpp
     engine.cpp
     Item.cpp
     items_setting.cpp
-    lightSource.cpp
     obj_reader.cpp
     shader.cpp
     shadowManager.cpp
     Source.cpp
     texture.cpp
     UBO.cpp
-    Utils.cpp
     WaterSimulation.cpp)
 
 target_link_libraries(cg GLEW::GLEW glfw)
+
+add_custom_target(CopyBinaries
+  COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_SOURCE_DIR}/third parties/glew/bin/glew32.dll" ${CMAKE_BINARY_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/obj" ${CMAKE_BINARY_DIR}/obj
+)
+
+add_dependencies(cg CopyBinaries)
