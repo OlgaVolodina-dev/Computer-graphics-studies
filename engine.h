@@ -6,6 +6,7 @@
 #include "Item.h"
 #include "WaterSimulation.h"
 #include <memory>
+#include "world_generation/worldHandler.h"
 class Engine
 {
 public:
@@ -18,6 +19,7 @@ private:
 	void CreateTextures();
 	void ResolveUBO();
 	bool msaa_ = true;
+	WorldHandler worldHandler_;
 	GLuint msaaFBO_ = 0U;
 
 	GLuint emptyVAO_;
@@ -25,7 +27,7 @@ private:
 	UBO globalUBO_;
 
 	std::vector<std::unique_ptr<Item>> items_;
-	WaterSimulation water;
+	//WaterSimulation water;
 	int scr_width = 800, scr_height= 600;
 
 	ShaderProgram quadProgram;

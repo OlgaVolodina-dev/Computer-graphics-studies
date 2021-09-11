@@ -6,7 +6,7 @@ project(ComputerGraphics)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-include_directories("third parties/glm" "third parties/stb")
+include_directories("third parties/glm" "third parties/stb" ${CMAKE_SOURCE_DIR})
 
 find_package(GLEW NAMES glew glew32 GLEW PATHS "${CMAKE_CURRENT_SOURCE_DIR}/third parties/glew"  CONFIG REQUIRED)
 find_package(GLFW NAMES glfw3 PATHS "${CMAKE_CURRENT_SOURCE_DIR}/third parties/glfw" CONFIG REQUIRED)
@@ -21,6 +21,11 @@ add_executable(cg
     shader.cpp
     shadowManager.cpp
     Source.cpp
+    world_generation/entities/trees.cpp
+    world_generation/worldHandler.cpp
+    world_generation/terrain/terrain.cpp
+    world_generation/terrain/terrainGenerator.cpp
+    world_generation/terrain/terrainHandler.cpp
     texture.cpp
     UBO.cpp
     WaterSimulation.cpp)

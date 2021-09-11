@@ -2,20 +2,19 @@
 #include "utils.h"
 #include <iostream>
 
-
 Engine::Engine() :
 	camera_(),
 	globalUBO_(),
 	quadProgram(QUAD_VERT, QUAD_FRAG)
 {
 	ItemSetting();
-
+	worldHandler_.Init();
 	// Order matters!
 	globalUBO_.RegisterListener(camera_);
 	globalUBO_.Setup();
-	for (auto& item : items_) {
-		item->LoadItem();
-	}
+	// for (auto& item : items_) {
+	// 	item->LoadItem();
+	// }
 	glGenVertexArrays(1, &emptyVAO_);
 	glGenFramebuffers(1, &msaaFBO_);
 	CreateTextures();
@@ -28,7 +27,7 @@ void Engine::SetWindowSize(int width, int height)
 	}
 	std::cout << width << height << std::endl;
 	camera_.UpdateWindowSize(width, height);
-	water.UpdateWindowSize(width, height);
+	//water.UpdateWindowSize(width, height);
 	scr_width = width;
 	scr_height = height;
 	CreateTextures();
@@ -61,9 +60,10 @@ void Engine::Draw()
 {	
 	glViewport(0, 0, scr_width, scr_height);
 	camera_.Commit();
+	worldHandler_.Process(camera_);
 	glEnable(GL_DEPTH_TEST);
 
-	water.PreRender(items_, camera_);
+	// water.PreRender(items_, camera_);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, msaa_? msaaFBO_ : 0 );
 	
@@ -71,10 +71,11 @@ void Engine::Draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	globalUBO_.UpdateUBO();
 	
-	for (auto& item : items_) {
-		item->Draw();
-	}
-	water.Draw();
+	// for (auto& item : items_) {
+	// 	item->Draw();
+	// }
+	worldHandler_.Draw();
+	// water.Draw();
 
 	if (msaa_) {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, msaaFBO_);

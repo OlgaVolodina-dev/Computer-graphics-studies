@@ -52,6 +52,11 @@
         "iomanip": "cpp",
         "iostream": "cpp",
         "ranges": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "thread": "cpp",
+        "condition_variable": "cpp",
+        "future": "cpp",
+        "mutex": "cpp",
+        "stop_token": "cpp"
     }
 }

@@ -79,6 +79,30 @@ void WaterFinalFrag(std::string& data) {
 		;
 }
 
+void TerrainVert(std::string& data) {
+	data =
+#include "shaders/terrain.vert"
+		;
+}
+
+void TerrainFrag(std::string& data) {
+	data =
+#include "shaders/terrain.frag"
+		;
+}
+
+void SimpleLightVert(std::string& data) {
+	data =
+#include "shaders/simple_light.vert"
+		;
+}
+
+void SimpleLightFrag(std::string& data) {
+	data =
+#include "shaders/simple_light.frag"
+		;
+}
+
 std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
 	{SHADERS_OPTIONS::SIMPLE_VERT, &SimpleShaderVert},
 	{SHADERS_OPTIONS::SIMPLE_FRAG, &SimpleShaderFrag},
@@ -93,6 +117,10 @@ std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSo
 	{SHADERS_OPTIONS::SIMPLE_COLOR_FRAG, &SimpleColorFrag},
 	{SHADERS_OPTIONS::WATER_FINAL_VERT, &WaterFinalVert},
 	{SHADERS_OPTIONS::WATER_FINAL_FRAG, &WaterFinalFrag},
+	{SHADERS_OPTIONS::TERRAIN_SHADER_VERT, &TerrainVert},
+	{SHADERS_OPTIONS::TERRAIN_SHADER_FRAG, &TerrainFrag},
+	{SHADERS_OPTIONS::SIMPLE_LIGHT_VERT, &SimpleLightVert},
+	{SHADERS_OPTIONS::SIMPLE_LIGHT_FRAG, &SimpleLightFrag}
 
 } };
 
@@ -116,13 +144,13 @@ GLuint  ShaderProgram::CompileShader(std::string& data, GLenum shader_t) {
 	{
 		glGetShaderInfoLog(shader, 512, NULL, infoLog);
 		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		abort();
 	};
 	return shader;
  }
 
 ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS fragment_shader)
 {
-	std::cout << "ShaderProgram" << shaderSourceHandler_.size()<< std::endl;
 	std::string vertex_data;
 	std::string fragment_data;
 	(*shaderSourceHandler_[vertex_shader])(vertex_data);
@@ -146,7 +174,6 @@ ShaderProgram::ShaderProgram(SHADERS_OPTIONS vertex_shader, SHADERS_OPTIONS frag
 
 	glDeleteShader(vertex);
 	glDeleteShader(fragment);
-	std::cout << "ShaderProgram exit" << std::endl;
 
 }
 

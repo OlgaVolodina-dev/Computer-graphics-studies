@@ -42,19 +42,19 @@ public:
 private:
 	float fov = 45;
 	float aspectRatio = 800.0 / 600.0;
-	float farPlane = 100.0f;
+	float farPlane = 1000.0f;
 	float nearPlane = 0.1f;
 
 	void Resolve();
 	bool quatertions_ = false;
-	glm::vec3 cameraPos = glm::vec3(24.1704f, 15.9654f, -37.2178);
+	glm::vec3 cameraPos = glm::vec3(64.0, 5.0, 64.0);
 	glm::vec3 cameraFront;
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	bool firstMouse = true;
 	glm::mat4 view_;
 	glm::mat4 projection_;
-	float yaw = -228.5f;
-	float pitch = -34.0f;
+	float yaw = 0.0f;
+	float pitch = 0.0f;
 	glm::mat4 frame_view;
 	float frame_pitch;
 	float frame_yaw;
