@@ -1,7 +1,7 @@
 #ifndef TERRAIN_HANDLER_H
 #define TERRAIN_HANDLER_H
 
-#include "terrain.h"
+#include "world_chunk.h"
 #include "camera.h"
 
 typedef std::pair<int, int> gridPair_t;
@@ -15,13 +15,12 @@ public:
     void GetVisibleSpace(int &xMin, int &zMin, int &xMax, int &zMax);
 
 private:
-    void GetFreeTerrainsAnsNums(std::vector<Terrain *> &, std::vector<gridPair_t> &);
+    void GetFreeTerrainsAnsNums(std::vector<WorldChunk *> &, std::vector<gridPair_t> &);
     bool TerrainExists(int, int, std::vector<bool> &remain);
     std::pair<int, int> FindNewGridCenter(glm::vec3 &position);
     std::pair<int, int> gridCenter_{0, 0};
-    std::vector<Terrain> terrains_{9};
+    std::vector<WorldChunk> terrains_{9};
     std::array<std::array<std::pair<int, int>, 3>, 3> grid_{};
-    std::vector<Terrain> lowPolyTerrains_{16};
     
 };
 

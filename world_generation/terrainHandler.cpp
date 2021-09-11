@@ -38,7 +38,7 @@ bool TerrainHandler::TerrainExists(int x, int z, std::vector<bool> &remain)
     return false;
 }
 
-void TerrainHandler::GetFreeTerrainsAnsNums(std::vector<Terrain *> &freeTerrains, std::vector<gridPair_t> &freenums)
+void TerrainHandler::GetFreeTerrainsAnsNums(std::vector<WorldChunk *> &freeTerrains, std::vector<gridPair_t> &freenums)
 {
     std::vector<bool> rt(9, false);
     for (int i = gridCenter_.first - 1; i <= gridCenter_.first + 1; ++i) {
@@ -72,7 +72,7 @@ void TerrainHandler::Process(Camera & camera)
     }
 
     gridCenter_ = FindNewGridCenter(cameraPosition);
-    std::vector<Terrain *> freeTerrains;
+    std::vector<WorldChunk *> freeTerrains;
     std::vector<gridPair_t> freeNums;
     GetFreeTerrainsAnsNums(freeTerrains, freeNums);
     if (freeTerrains.size() != freeNums.size()) {

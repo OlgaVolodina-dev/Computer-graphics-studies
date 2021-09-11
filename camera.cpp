@@ -79,7 +79,7 @@ void Camera::UpdateWindowSize(int width, int height)
 //TODO take enum class
 void Camera::ProcessKeyboard(Translation e, float ellapsed_milliseconds)
 {
-	const float cameraSpeed = 20.0f * ellapsed_milliseconds / 1000.0;
+	const float cameraSpeed = 50.0f * ellapsed_milliseconds / 1000.0;
 	switch (e)
 	{
 	case Translation::FORWARD:

@@ -23,6 +23,12 @@ bool Terrain::PointInTerrain(glm::vec3 &position)
         zBoundary.first <= position.z && zBoundary.second >= position.z;
 }
 
+void Terrain::GetBoundingBox(int &xMin, int &zMin, int &xMax, int &zMax)
+{
+    std::tie(xMin, xMax) = xBoundary;
+    std::tie(zMin, zMax) = zBoundary;
+}
+
 void Terrain::FillVertices()
 {
     int k = 0;
@@ -104,7 +110,7 @@ void Terrain::Init(unsigned int numVertices, std::pair<int, int> gridNumber)
     glUniformBlockBinding(shader_, 0U, 0U);
 }
 
-void Terrain::CheckUpdatedData()
+bool Terrain::CheckUpdatedData()
 {
     if (t.joinable()) {
         t.join();
@@ -115,7 +121,9 @@ void Terrain::CheckUpdatedData()
         if (!result) {
             std::cout << "Unmap error" << std::endl;
         }
+        return true;
     }
+    return false;
 }
 
 void Terrain::Update(std::pair<int, int> gridNumber)

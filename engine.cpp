@@ -8,7 +8,7 @@ Engine::Engine() :
 	quadProgram(QUAD_VERT, QUAD_FRAG)
 {
 	ItemSetting();
-	worldHandler_.Init();
+	terrainHandler_.Init();
 	// Order matters!
 	globalUBO_.RegisterListener(camera_);
 	globalUBO_.Setup();
@@ -60,7 +60,7 @@ void Engine::Draw()
 {	
 	glViewport(0, 0, scr_width, scr_height);
 	camera_.Commit();
-	worldHandler_.Process(camera_);
+	terrainHandler_.Process(camera_);
 	glEnable(GL_DEPTH_TEST);
 
 	// water.PreRender(items_, camera_);
@@ -74,7 +74,7 @@ void Engine::Draw()
 	// for (auto& item : items_) {
 	// 	item->Draw();
 	// }
-	worldHandler_.Draw();
+	terrainHandler_.Draw();
 	// water.Draw();
 
 	if (msaa_) {

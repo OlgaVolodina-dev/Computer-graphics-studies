@@ -21,11 +21,11 @@ add_executable(cg
     shader.cpp
     shadowManager.cpp
     Source.cpp
-    world_generation/entities/trees.cpp
-    world_generation/worldHandler.cpp
-    world_generation/terrain/terrain.cpp
-    world_generation/terrain/terrainGenerator.cpp
-    world_generation/terrain/terrainHandler.cpp
+    world_generation/terrain.cpp
+    world_generation/terrainGenerator.cpp
+    world_generation/terrainHandler.cpp
+    world_generation/trees.cpp
+    world_generation/world_chunk.cpp
     texture.cpp
     UBO.cpp
     WaterSimulation.cpp)

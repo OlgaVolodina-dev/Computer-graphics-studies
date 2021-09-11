@@ -17,13 +17,12 @@ struct ItemInitializationInfo
 	SHADERS_OPTIONS vert;
 	SHADERS_OPTIONS frag;
 	bool shadowCaster = true;
-	size_t n_indices = 1;
 };
 
 struct ItemModelPositionInfo
 {
 	ItemModelPositionInfo() = default;
-
+	size_t n_indices = 1;
 	std::vector<glm::vec3> position_;
 	std::vector<float> scale_ = { 1 };
 	std::vector<float> rotation_angle_ = { 0.0 };
@@ -48,6 +47,8 @@ public:
 	const ItemModelPositionInfo& GetReadOnlyModelInfo() { return posInfo; }
 	GLuint GetMainProgram() { return shader_; }
 	std::vector<BoundingBox>& GetBoundingBoxs() { return bb_world; }
+	void LoadBuffers();
+	void Reset();
 
 private:
 	void CalculateBoundingBoxes();
@@ -58,7 +59,9 @@ private:
 	Texture metallicTex_;
 	ShaderProgram shader_;
 	ShaderProgram simpleColorShader_;
-	GLuint VAO;
+	GLuint VAO = 0U;
+	GLuint VBO = 0U;
+
 	ShaderProgram depthPassShader_;
 	BoundingBox bb_local;
 	std::vector<glm::mat4> modelMatrix_ = { glm::mat4(1.0) };

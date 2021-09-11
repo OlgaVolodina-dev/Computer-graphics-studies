@@ -6,7 +6,7 @@
 #include "Item.h"
 #include "WaterSimulation.h"
 #include <memory>
-#include "world_generation/worldHandler.h"
+#include "world_generation/terrainHandler.h"
 class Engine
 {
 public:
@@ -19,7 +19,7 @@ private:
 	void CreateTextures();
 	void ResolveUBO();
 	bool msaa_ = true;
-	WorldHandler worldHandler_;
+	TerrainHandler terrainHandler_;
 	GLuint msaaFBO_ = 0U;
 
 	GLuint emptyVAO_;

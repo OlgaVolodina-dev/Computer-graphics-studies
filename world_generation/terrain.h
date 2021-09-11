@@ -15,8 +15,9 @@ public:
     void Update(std::pair<int, int> gridNumber);
     bool PointInTerrain(glm::vec3 &position);
     std::pair<int, int> GetGridNumber() { return gridNumber_; }
-    void CheckUpdatedData();
+    bool CheckUpdatedData();
     static unsigned int GetSize() { return size; }
+    void GetBoundingBox(int &xMin, int &zMin, int &xMax, int &zMax);
 private:
     void FillVertices();
     std::pair<int, int> xBoundary;

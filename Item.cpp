@@ -11,14 +11,29 @@ Item::Item(ItemInitializationInfo& info):
 
 Item::~Item()
 {
-	glDeleteVertexArrays(1, &VAO);
+	Reset();
+}
+
+void Item::Reset() {
+	if (VAO) {
+		glDeleteVertexArrays(1, &VAO);
+		VAO = 0U;
+	}
+	if (VBO) {
+		glDeleteBuffers(1, &VBO);
+		VBO = 0U;
+	}
 }
 
 void Item::LoadItem()
 {
 	ObjReader::ReadObj(info.obj_file_name, vertices, bb_local);
+	//CalculateBoundingBoxes();
+}
+
+void Item::LoadBuffers()
+{
 	glGenVertexArrays(1, &VAO);
-	GLuint VBO;
 	glGenBuffers(1, &VBO);
 
 	glBindVertexArray(VAO);
@@ -35,7 +50,7 @@ void Item::LoadItem()
 	glEnableVertexAttribArray(2);
 
 	modelMatrix_.clear();
-	for (int i = 0; i < info.n_indices; ++i) {
+	for (int i = 0; i < posInfo.n_indices; ++i) {
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, posInfo.position_[i]);
 		if (posInfo.rotation_angle_[i] != 0.0) {
@@ -54,46 +69,51 @@ void Item::LoadItem()
 		glVertexAttribDivisor(i + 3, 1);
 	}
 	glUniformBlockBinding(shader_, 0U, 0U);
-
-	
-	//CalculateBoundingBoxes();
 }
 
 
 void Item::DrawSimpleColor()
 {
+	if (!VAO) { 
+		return;
+	}
 	glBindVertexArray(VAO);
 	colorTex_.Use(0);
-	if (info.n_indices == 1) {
+	if (posInfo.n_indices == 1) {
 		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
 	} else {
-		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), info.n_indices);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), posInfo.n_indices);
 	}
 }
 
 void Item::DrawSimple()
 {
+	if (!VAO) { 
+		return;
+	}
 	glBindVertexArray(VAO);
 	glUseProgram(depthPassShader_);
-	if (info.n_indices == 1) {
+	if (posInfo.n_indices == 1) {
 		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
 	} else {
-		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), info.n_indices);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), posInfo.n_indices);
 	}
 }
 
 void Item::Draw() {
-	
+	if (!VAO) { 
+		return;
+	}
 	glUseProgram(shader_);
 	glBindVertexArray(VAO);
 	colorTex_.Use();
 	metallicTex_.Use(1);
 
-	if (info.n_indices == 1) {
+	if (posInfo.n_indices == 1) {
 		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
 	}
 	else {
-		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), info.n_indices);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), posInfo.n_indices);
 	}
 }
 
