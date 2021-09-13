@@ -1,5 +1,6 @@
 #include "Item.h"
 #include <iostream>
+#include "Log.h"
 Item::Item(ItemInitializationInfo& info):
 	info(info),
 	colorTex_(info.colorTexName, info.colorTexGenerateMipmap),
@@ -27,19 +28,22 @@ void Item::Reset() {
 
 void Item::LoadItem()
 {
-	ObjReader::ReadObj(info.obj_file_name, vertices, bb_local);
+	ObjReader::ReadObj(info.obj_file_name, model, bb_local);
+	std::string name = "obj/trees/lowpolytree.mtl";
+	ObjReader::ReadMTL(name, model);
 	//CalculateBoundingBoxes();
 }
 
 void Item::LoadBuffers()
 {
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, std::size(vertices) * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, model.vertices.size() * sizeof(Vertex), model.vertices.data(), GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -80,9 +84,9 @@ void Item::DrawSimpleColor()
 	glBindVertexArray(VAO);
 	colorTex_.Use(0);
 	if (posInfo.n_indices == 1) {
-		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
+		glDrawArrays(GL_TRIANGLES, 0, model.vertices.size());
 	} else {
-		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), posInfo.n_indices);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, model.vertices.size(), posInfo.n_indices);
 	}
 }
 
@@ -94,9 +98,9 @@ void Item::DrawSimple()
 	glBindVertexArray(VAO);
 	glUseProgram(depthPassShader_);
 	if (posInfo.n_indices == 1) {
-		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
+		glDrawArrays(GL_TRIANGLES, 0, model.vertices.size());
 	} else {
-		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), posInfo.n_indices);
+		glDrawArraysInstanced(GL_TRIANGLES, 0, model.vertices.size(), posInfo.n_indices);
 	}
 }
 
@@ -108,13 +112,20 @@ void Item::Draw() {
 	glBindVertexArray(VAO);
 	colorTex_.Use();
 	metallicTex_.Use(1);
+	for (int i = 0; i < model.meshInfo.size(); ++i) {
+		glUniform3fv(0, 1, glm::value_ptr(model.meshInfo[i].mtlData.Ka));
+		glUniform3fv(1, 1, glm::value_ptr(model.meshInfo[i].mtlData.Kd));
+		glUniform3fv(2, 1, glm::value_ptr(model.meshInfo[i].mtlData.Ks));
+		glUniform1f(3, model.meshInfo[i].mtlData.Ns);
+		size_t nextIndex = (i == model.meshInfo.size() - 1) ? model.vertices.size() : model.meshInfo[i+1].index;
+		if (posInfo.n_indices == 1) {
+			glDrawArrays(GL_TRIANGLES, 0, std::size(model.vertices));
+		}
+		else {
+			glDrawArraysInstanced(GL_TRIANGLES, model.meshInfo[i].index, nextIndex, posInfo.n_indices);
+		}
+	}
 
-	if (posInfo.n_indices == 1) {
-		glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
-	}
-	else {
-		glDrawArraysInstanced(GL_TRIANGLES, 0, std::size(vertices), posInfo.n_indices);
-	}
 }
 
 void Item::CalculateBoundingBoxes()
@@ -134,4 +145,4 @@ void Item::CalculateBoundingBoxes()
 		bb_world_item.minZ = min.z;
 		bb_world.push_back(bb_world_item);
 	}
-}
+}	

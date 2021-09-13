@@ -12,10 +12,13 @@ layout(std140, binding = 0) uniform GlobalMatrices
 };
 
 out vec3 Normal;
+out vec3 FragPos;
 void main()
 {   
     gl_Position = projection * view *  modelTransform * vec4(aPos, 1.0);
     Normal = mat3(transpose(inverse(modelTransform))) * aNormal;
+    FragPos = vec3(modelTransform * vec4(aPos, 1.0));
+
 
 }
 )"

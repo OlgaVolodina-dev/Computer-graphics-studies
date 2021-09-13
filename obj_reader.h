@@ -24,10 +24,36 @@ struct Vertex
 	glm::vec3 normal;
 };
 
+struct MtlData
+{
+	float Ns;
+	glm::vec3 Ka;
+	glm::vec3 Kd;
+	glm::vec3 Ks;
+	float Ni;
+	float d;
+	uint8_t illum;
+};
+
+struct MeshInfo
+{
+	std::string name;
+	size_t index;
+	MtlData mtlData;
+};
+
+struct Model
+{
+	std::vector<Vertex> vertices;
+	std::vector<MeshInfo> meshInfo;
+};
+
 class ObjReader
 {
 public:
-	static void ReadObj(std::string &filename, std::vector<Vertex> & vertices, BoundingBox& bb);
+	static void ReadObj(std::string &filename, Model & vertices, BoundingBox& bb);
+	static void ReadMTL(std::string& filename, Model& model);
+
 };
 
 #endif // OBJ_READER_H

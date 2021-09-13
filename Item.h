@@ -54,7 +54,7 @@ private:
 	void CalculateBoundingBoxes();
 	ItemInitializationInfo info;
 	ItemModelPositionInfo posInfo;
-	std::vector<Vertex> vertices;
+	Model model;
 	Texture colorTex_;
 	Texture metallicTex_;
 	ShaderProgram shader_;

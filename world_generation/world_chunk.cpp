@@ -15,7 +15,6 @@ void WorldChunk::CheckUpdatedData() {
     if (terrain.CheckUpdatedData()) {
         tree.Update(terrain);
     }
-
 }
 
 void WorldChunk::Draw()
