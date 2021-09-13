@@ -43,7 +43,6 @@ void Trees::GetTreesPosition(Terrain & terrain, std::vector<glm::vec3> &position
 {
     int xMin, xMax, zMin, zMax;
     terrain.GetBoundingBox(xMin, zMin, xMax, zMax);
-    std::cout<< " xMax "<< xMax << " " << xMin <<  " " << zMin << " " << zMax << std::endl;
     const double mean = 0.0;
     const double stddev = 2.0;
     
@@ -58,7 +57,6 @@ void Trees::GetTreesPosition(Terrain & terrain, std::vector<glm::vec3> &position
         }
     }
     
-    std::cout << positions.size() << std::endl;
 } 
 
 void Trees::Draw()

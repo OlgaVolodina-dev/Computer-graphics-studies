@@ -17,7 +17,7 @@ out vec2 TexCoord;
 void main()
 {   
     gl_Position = projection * view *  modelTransform * vec4(aPos, 1.0);
-    Normal = mat3(transpose(inverse(modelTransform))) * aNormal;
+    Normal =  aNormal;
     Position = aPos;
     TexCoord = aTexCoord;
 

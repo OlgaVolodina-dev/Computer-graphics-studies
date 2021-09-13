@@ -7,6 +7,9 @@
 
 Texture::Texture(std::string path, bool generateMipMap)
 {
+	if (path.empty()) {
+		return;
+	}
 	int nrChannels;
 	unsigned char* data = stbi_load(path.data(), &width_, &height_, &nrChannels, 0);
 	if (!data) {
@@ -22,7 +25,6 @@ Texture::Texture(std::string path, bool generateMipMap)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, width_, height_, 0, GL_RED, GL_UNSIGNED_BYTE, data);
 	} else if (nrChannels == 4) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width_, height_, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
 	}
 	CHECK_OPENGL_ERROR()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

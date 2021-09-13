@@ -4,9 +4,10 @@
 class TerrainGenerator
 {
 public:
-    enum class BIOME {
+    enum class BIOME : uint8_t {
         OCEAN,
-        FOREST
+        FOREST, 
+        MEADOW
     };
     static float GetHeight(int x, int z);
     static BIOME GetBiome(int x, int z);

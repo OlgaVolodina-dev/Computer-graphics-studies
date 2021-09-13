@@ -10,11 +10,12 @@
 #include "utils.h"
 #include "terrainGenerator.h"
 
-unsigned int Terrain::size = 128U;
+unsigned int Terrain::size = 256U;
 Terrain::Terrain():
     shader_(TERRAIN_SHADER_VERT, TERRAIN_SHADER_FRAG), 
     sand_("obj/terrain/sand.jpg", true),
-    grass_("obj/terrain/grass.jpg", true)
+    grass_("obj/terrain/grass.jpg", true),
+    forest_("obj/terrain/forest.jpg", true)
 {}
 
 bool Terrain::PointInTerrain(glm::vec3 &position)
@@ -32,43 +33,53 @@ void Terrain::GetBoundingBox(int &xMin, int &zMin, int &xMax, int &zMax)
 void Terrain::FillVertices()
 {
     int k = 0;
-    for (int i = 0; i < numVertices_; ++i) {
-        for (int j  = 0; j < numVertices_; ++j) {
-            auto createVertex = [&](int i, int j) {
-                float x = xBoundary.first + float(i) / numVertices_ * size;
-                float z = zBoundary.first + float(j) / numVertices_ * size;
-                Vertex v {
-                    glm::vec3(x, TerrainGenerator::GetHeight(x, z), z), 
-                    glm::vec2(float(i), float(j)),
-                    glm::vec3(0.0)
-                };
-                return v;
-            };
+    for (int i = 0; i <= numVertices_; ++i) {
+        for (int j  = 0; j <= numVertices_; ++j) {
+            float x = xBoundary.first + float(i) / numVertices_ * size;
+            float z = zBoundary.first + float(j) / numVertices_ * size;
             
-            vertices[k++] = createVertex(i, j);
-            vertices[k++] = createVertex(i+1, j);
-            vertices[k++] = createVertex(i, j+1);
-            vertices[k++] = createVertex(i, j+1);
-            vertices[k++] = createVertex(i+1, j);
-            vertices[k++] = createVertex(i+1, j+1);
+            const float shift = 1.0 / numVertices_ * size * 2.0;
+            glm::vec3 position(x, TerrainGenerator::GetHeight(x, z), z);
+            glm::vec3 v1(x + shift, TerrainGenerator::GetHeight(x + shift, z + shift), z + shift);
+            glm::vec3 v2(x - shift, TerrainGenerator::GetHeight(x - shift, z- shift), z-shift);
+            glm::vec3 v3(x - shift, TerrainGenerator::GetHeight(x - shift, z + shift), z+ shift);
+            glm::vec3 v4(x+ shift, TerrainGenerator::GetHeight(x+ shift, z - shift), z - shift);
+
+            glm::vec3 a = v1 - v2;
+            glm::vec3 b = v3 - v4;
+
+            glm::vec3 normal = glm::normalize(glm::cross(b, a));
+            Vertex v {
+                glm::vec3(position),
+                // OpenGL texture start point is lower left
+                glm::vec2(float(j) / numVertices_, float(i) / numVertices_),
+                glm::vec3(normal)
+            };
+            vertices[k++]  = std::move(v);
         } 
     }
-
-    for (int i  = 0; i < vertices.size(); i+=3)
-    {
-        Vertex &v1 = vertices[i];
-        Vertex &v2 = vertices[i+1];
-        Vertex &v3 = vertices[i+2];
-
-        glm::vec3 a = v2.position - v1.position;
-        glm::vec3 b = v3.position - v1.position;
-
-        glm::vec3 normal = glm::cross(a, b);
-
-        v1.normal = normal;
-        v2.normal = normal;
-        v3.normal = normal;
+    k = 0;
+    for (int i = 0; i < numVertices_; ++i) {
+        for (int j  = 0; j < numVertices_; ++j) {
+            float x = xBoundary.first + (float(i) + 0.5) / numVertices_ * size;
+            float z = zBoundary.first + (float(j) + 0.5) / numVertices_ * size;
+            biomeMap_[k++] = static_cast<uint8_t>(TerrainGenerator::GetBiome(x, z));
+        }
     }
+}
+
+void Terrain::InitBiomeTex()
+{
+    if (!biomeTex_) {
+        glGenTextures(1, &biomeTex_);
+    }
+    glBindTexture(GL_TEXTURE_2D, biomeTex_);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R8UI, numVertices_, numVertices_, 0, GL_RED_INTEGER, GL_UNSIGNED_BYTE, biomeMap_.data());
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 void Terrain::Init(unsigned int numVertices, std::pair<int, int> gridNumber)
@@ -77,11 +88,33 @@ void Terrain::Init(unsigned int numVertices, std::pair<int, int> gridNumber)
     gridNumber_ = gridNumber;
     xBoundary = {gridNumber.first * size, (gridNumber.first + 1) * size};
     zBoundary = {gridNumber.second * size, (gridNumber.second + 1) * size};
-    vertices.resize(numVertices * numVertices * 6);
+    vertices.resize((numVertices_ + 1) * (numVertices_ + 1));
+    biomeMap_.resize((numVertices_ + 1) * (numVertices_ + 1));
     FillVertices();
+    InitBiomeTex();
+    
+    int row_shift = numVertices_ + 1;
+    for (int i = 0; i < numVertices_; ++i) {
+        for (int j = 0; j < numVertices_; ++j) {
+
+            indices.push_back(i * row_shift + j);
+            indices.push_back(i * row_shift + j + 1);
+            indices.push_back((i+1) * row_shift + j);
+        }
+    }
+
+    for (int i = 1; i <= numVertices_; ++i) {
+        for (int j = 1; j <= numVertices_; ++j) {
+
+            indices.push_back(i * row_shift + j - 1);
+            indices.push_back(i * row_shift + j);
+            indices.push_back((i-1) * row_shift + j);
+        }
+    }
 
     glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
 	glBindVertexArray(VAO);
 
@@ -107,6 +140,11 @@ void Terrain::Init(unsigned int numVertices, std::pair<int, int> gridNumber)
 		glEnableVertexAttribArray(i + 3);
 		glVertexAttribDivisor(i + 3, 1);
 	}
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, std::size(indices) * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+
+
     glUniformBlockBinding(shader_, 0U, 0U);
 }
 
@@ -114,6 +152,7 @@ bool Terrain::CheckUpdatedData()
 {
     if (t.joinable()) {
         t.join();
+        InitBiomeTex();
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         void* ptr = glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
         memcpy(ptr, vertices.data(), std::size(vertices) * sizeof(Vertex));
@@ -137,11 +176,14 @@ void Terrain::Update(std::pair<int, int> gridNumber)
 void Terrain::Draw()
 {
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, biomeTex_);
     glBindVertexArray(VAO);
 	glUseProgram(shader_);
-    sand_.Use(0);
-    grass_.Use(1);
-    glDrawArrays(GL_TRIANGLES, 0, std::size(vertices));
+    sand_.Use(1);
+    grass_.Use(2);
+    forest_.Use(3);
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
 
     // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

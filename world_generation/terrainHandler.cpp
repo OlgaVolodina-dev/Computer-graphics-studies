@@ -1,6 +1,5 @@
 #include "terrainHandler.h"
-#include <iostream>
-
+#include "Log.h"
 void TerrainHandler::Init()
 {
     int k = 0;
@@ -13,15 +12,15 @@ void TerrainHandler::Init()
     }
 }
 
-std::pair<int, int> TerrainHandler::FindNewGridCenter(glm::vec3 &position)
+std::pair<int, int> TerrainHandler::FindNewGridCenter(glm::vec3 &position, WorldChunk*& newCenterTerrain)
 {
     for (auto &terrain: terrains_) {
         if (terrain.PointInTerrain(position)) {
+            newCenterTerrain = &terrain;
             return terrain.GetGridNumber();
         }
     }
-
-    std::cout << "Grid center  not found " << position.x << " " << position.y << " " << position.z << std::endl;
+    Log::Error( "Grid center  not found %f %f %f", position.x, position.y, position.z);
     abort();
     return {0, 0};
 }
@@ -70,8 +69,13 @@ void TerrainHandler::Process(Camera & camera)
                 }
             }
     }
-
-    gridCenter_ = FindNewGridCenter(cameraPosition);
+    WorldChunk * newTerrainCenter = nullptr;
+    gridCenter_ = FindNewGridCenter(cameraPosition, newTerrainCenter);
+    if (newTerrainCenter == nullptr) {
+        std::cout << "new terrain center in null" << std::endl;
+        abort();
+    }
+    std::swap(terrains_[1], *newTerrainCenter);
     std::vector<WorldChunk *> freeTerrains;
     std::vector<gridPair_t> freeNums;
     GetFreeTerrainsAnsNums(freeTerrains, freeNums);
@@ -86,9 +90,8 @@ void TerrainHandler::Process(Camera & camera)
 
 void TerrainHandler::GetVisibleSpace(int &xMin, int &zMin, int &xMax, int &zMax)
 {
-    int size = 128; //static_cast<int>(Terrain::GetSize());
+    int size = static_cast<int>(Terrain::GetSize());
     xMin = (gridCenter_.first - 1) * size;
-    std::cout << " " << size << " " << xMin << std::endl;
     xMax = (gridCenter_.first + 2) * size;
     zMin = (gridCenter_.second - 1) * size;
     zMax = (gridCenter_.second + 2) * size;
@@ -96,6 +99,6 @@ void TerrainHandler::GetVisibleSpace(int &xMin, int &zMin, int &xMax, int &zMax)
 
 void TerrainHandler::Draw() {
     for (auto &terrain : terrains_) {
-        terrain.Draw();
+            terrain.Draw();
     }
 }

@@ -13,7 +13,7 @@ void WorldChunk::Update(std::pair<int, int> gridNumber) {
 
 void WorldChunk::CheckUpdatedData() {
     if (terrain.CheckUpdatedData()) {
-        tree.Init(terrain);
+        tree.Update(terrain);
     }
 
 }

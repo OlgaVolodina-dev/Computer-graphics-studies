@@ -37,7 +37,6 @@ bool firstMouse = true;
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
     if (firstMouse) // initially set to true
     {
-        std::cout << "!" << std::endl;
         lastX = xpos;
         lastY = ypos;
         firstMouse = false;

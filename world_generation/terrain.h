@@ -20,6 +20,7 @@ public:
     void GetBoundingBox(int &xMin, int &zMin, int &xMax, int &zMax);
 private:
     void FillVertices();
+    void InitBiomeTex();
     std::pair<int, int> xBoundary;
     std::pair<int, int> zBoundary;
     std::pair<int, int> gridNumber_;
@@ -27,11 +28,16 @@ private:
     unsigned int numVertices_ = 0U;
     GLuint VAO;
     GLuint VBO;
+    GLuint EBO;
     ShaderProgram shader_;
     std::vector<Vertex> vertices{};
+    std::vector<unsigned int> indices{};
     Texture sand_;
     Texture grass_;
+    Texture forest_;
     std::thread t;
+    GLuint biomeTex_ = 0U;
+    std::vector<uint8_t> biomeMap_;
 };
 
 #endif // TERRAIN_H
