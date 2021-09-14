@@ -13,9 +13,9 @@ layout(std140, binding = 0) uniform GlobalMatrices
 };
 
 layout(binding=0) uniform usampler2D biomeTex;
-layout(binding=1) uniform sampler2D sand;
-layout(binding=2) uniform sampler2D grass;
-layout(binding=3) uniform sampler2D forest;
+layout(binding=2) uniform sampler2D sand;
+layout(binding=3) uniform sampler2D grass;
+layout(binding=4) uniform sampler2D forest;
 
 void main()
 {
@@ -31,6 +31,6 @@ void main()
     vec3 norm = normalize(Normal);
     float diff = max(abs(dot(norm, lightDir1)), 0.0) ;
     FragColor = vec4(diff * color, 1.0);
-    //FragColor = vec4(abs(norm), 1.0);
+    //FragColor = vec4(1.0);
 }
 )"

@@ -75,7 +75,7 @@ void TerrainHandler::Process(Camera & camera)
         std::cout << "new terrain center in null" << std::endl;
         abort();
     }
-    std::swap(terrains_[1], *newTerrainCenter);
+    //std::swap(terrains_[1], *newTerrainCenter);
     std::vector<WorldChunk *> freeTerrains;
     std::vector<gridPair_t> freeNums;
     GetFreeTerrainsAnsNums(freeTerrains, freeNums);
@@ -86,15 +86,6 @@ void TerrainHandler::Process(Camera & camera)
     for (int i = 0; i < freeTerrains.size(); ++i) {
         freeTerrains[i]->Update(freeNums[i]);
     }
-}
-
-void TerrainHandler::GetVisibleSpace(int &xMin, int &zMin, int &xMax, int &zMax)
-{
-    int size = static_cast<int>(Terrain::GetSize());
-    xMin = (gridCenter_.first - 1) * size;
-    xMax = (gridCenter_.first + 2) * size;
-    zMin = (gridCenter_.second - 1) * size;
-    zMax = (gridCenter_.second + 2) * size;
 }
 
 void TerrainHandler::Draw() {

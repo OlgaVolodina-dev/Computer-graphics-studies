@@ -12,8 +12,6 @@ public:
     void Process(Camera &camera);
     void Init();
     void Draw();
-    void GetVisibleSpace(int &xMin, int &zMin, int &xMax, int &zMax);
-
 private:
     void GetFreeTerrainsAnsNums(std::vector<WorldChunk *> &, std::vector<gridPair_t> &);
     bool TerrainExists(int, int, std::vector<bool> &remain);

@@ -4,7 +4,7 @@
 #include "terrainGenerator.h"
 
 
-void Trees::Init(Terrain &terrain)
+void Trees::Init(WorldChunkInfo const &worldChunkInfo)
 {
     ItemInitializationInfo treesInfo;
 	treesInfo.obj_file_name = "obj/trees/lowpolytree.obj";
@@ -13,13 +13,14 @@ void Trees::Init(Terrain &terrain)
 	treesInfo.colorTexGenerateMipmap = false;
 	tree.reset(new Item(treesInfo));
     tree->LoadItem();
-    Update(terrain);
+    Update(worldChunkInfo);
+    CheckUpdatedData();
 }
 
-void Trees::Update(Terrain & terrain)
+void Trees::Update(WorldChunkInfo const &worldChunkInfo)
 {
     std::vector<glm::vec3> positions;
-    GetTreesPosition(terrain, positions);
+    GetTreesPosition(worldChunkInfo, positions);
     if (positions.size() == 0) {
         tree->Reset();
         return;
@@ -36,22 +37,24 @@ void Trees::Update(Terrain & terrain)
 		treesModelInfo.rotation_angle_.push_back(1.0);
 		treesModelInfo.scale_.push_back(1.0);
 	}
+}
+
+void Trees::CheckUpdatedData()
+{
     tree->LoadBuffers();	
 }
 
-void Trees::GetTreesPosition(Terrain & terrain, std::vector<glm::vec3> &positions)
+void Trees::GetTreesPosition(WorldChunkInfo const &worldChunkInfo, std::vector<glm::vec3> &positions)
 {
     int xMin, xMax, zMin, zMax;
-    terrain.GetBoundingBox(xMin, zMin, xMax, zMax);
-    const double mean = 0.0;
-    const double stddev = 2.0;
+    worldChunkInfo.GetBoundingBox(xMin, zMin, xMax, zMax);
     
     for (int x = xMin; x < xMax; ++x) {
         for (int z = zMin; z < zMax; ++z){
             if (TerrainGenerator::GetBiome(x, z) == TerrainGenerator::BIOME::FOREST) {
                 float n = dist(generator);
                 if (abs(n) > 6.0) {
-                    positions.push_back(glm::vec3(x, TerrainGenerator::GetHeight(x, z) + 2.5F, z));
+                    positions.push_back(glm::vec3(x, TerrainGenerator::GetHeight(x, z) + 1.5F, z));
                 }
             } 
         }
