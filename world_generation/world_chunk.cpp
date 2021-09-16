@@ -14,6 +14,7 @@ void WorldChunk::Init(unsigned int numVertices, std::pair<int, int> gridNumber)
     GenerateHeightMap();
     terrain.Init(worldChunkInfo);
     tree.Init(worldChunkInfo);
+    grass.Init(worldChunkInfo);
 }
 
 void WorldChunk::GenerateBiomeMap()
@@ -65,6 +66,7 @@ void WorldChunk::UpdateInThread(std::pair<int, int> gridNumber)
     GenerateHeightMap();
     terrain.Update(worldChunkInfo);
     tree.Update(worldChunkInfo);
+    grass.Update(worldChunkInfo);
     updateDone = true;
 }
 
@@ -77,12 +79,15 @@ void WorldChunk::CheckUpdatedData() {
         t.join();
         updateDone = false;
         terrain.CheckUpdatedData(worldChunkInfo);
-       tree.CheckUpdatedData();
+
+        tree.CheckUpdatedData();
+        grass.CheckUpdatedData();
     }
 }
 
 void WorldChunk::Draw()
 {
+    grass.Draw();
     terrain.Draw();
     tree.Draw();
 }

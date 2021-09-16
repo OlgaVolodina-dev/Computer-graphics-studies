@@ -103,6 +103,19 @@ void SimpleLightFrag(std::string& data) {
 		;
 }
 
+void GrassVert(std::string& data) {
+	data =
+#include "shaders/grass.vert"
+		;
+}
+
+void GrassFrag(std::string& data) {
+	data =
+#include "shaders/grass.frag"
+		;
+}
+
+
 std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSourceHandler_{ {
 	{SHADERS_OPTIONS::SIMPLE_VERT, &SimpleShaderVert},
 	{SHADERS_OPTIONS::SIMPLE_FRAG, &SimpleShaderFrag},
@@ -120,8 +133,9 @@ std::unordered_map<SHADERS_OPTIONS, ShaderSourceHandler> ShaderProgram::shaderSo
 	{SHADERS_OPTIONS::TERRAIN_SHADER_VERT, &TerrainVert},
 	{SHADERS_OPTIONS::TERRAIN_SHADER_FRAG, &TerrainFrag},
 	{SHADERS_OPTIONS::SIMPLE_LIGHT_VERT, &SimpleLightVert},
-	{SHADERS_OPTIONS::SIMPLE_LIGHT_FRAG, &SimpleLightFrag}
-
+	{SHADERS_OPTIONS::SIMPLE_LIGHT_FRAG, &SimpleLightFrag},
+	{SHADERS_OPTIONS::GRASS_VERT, &GrassVert},
+	{SHADERS_OPTIONS::GRASS_FRAG, &GrassFrag}
 } };
 
 void ShaderProgram::Use() {

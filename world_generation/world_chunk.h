@@ -6,6 +6,8 @@
 #include "trees.h"
 #include <thread>
 #include <atomic>
+#include "grass.h"
+
 #include "world_chunk_info.h"
 
 class WorldChunk
@@ -27,6 +29,7 @@ private:
 
     Terrain terrain;
     Trees tree;
+    Grass grass;
 
     WorldChunkInfo worldChunkInfo{};
 

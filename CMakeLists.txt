@@ -23,6 +23,7 @@ add_executable(cg
     shader.cpp
     shadowManager.cpp
     Source.cpp
+    world_generation/grass.cpp
     world_generation/terrain.cpp
     world_generation/terrainGenerator.cpp
     world_generation/terrainHandler.cpp

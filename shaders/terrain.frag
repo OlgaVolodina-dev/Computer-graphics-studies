@@ -20,11 +20,11 @@ layout(binding=4) uniform sampler2D forest;
 void main()
 {
     uint biome = texture(biomeTex, TexCoord).r;
-    vec3 color =  texture(grass, TexCoord * 25.0).xyz;
+    vec3 color =  texture(grass, TexCoord * 35.0).xyz;
     if (biome == 0U) {
-        color = texture(sand, TexCoord * 25.0).xyz;
+        color = texture(sand, TexCoord * 35.0).xyz;
     } else if (biome == 1U) {
-        color = texture(forest, TexCoord * 25.0).xyz;
+        color = texture(forest, TexCoord * 35.0).xyz;
     }
     vec3 lightDir1 = normalize(vec3(0.0, -5.0, -2.0));
     float diffuseStrength = 1.0;
