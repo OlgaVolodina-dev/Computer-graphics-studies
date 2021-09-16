@@ -7,7 +7,7 @@ void TerrainHandler::Init()
         for (int j = 0; j < 3; ++j) {
             int x = gridCenter_.first + i - 1;
             int z = gridCenter_.second + j - 1;
-            terrains_[k++].Init(32U, {x, z});
+            terrains_[k++].Init(128U, {x, z});
         }
     }
 }
@@ -90,6 +90,10 @@ void TerrainHandler::Process(Camera & camera)
 
 void TerrainHandler::Draw() {
     for (auto &terrain : terrains_) {
+        //if (terrain.GetGridNumber().first == gridCenter_.first &&
+         //   terrain.GetGridNumber().second == gridCenter_.second) {
+
             terrain.Draw();
+        //}
     }
 }

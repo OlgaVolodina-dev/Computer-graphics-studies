@@ -64,7 +64,7 @@ void Terrain::Init(WorldChunkInfo const &worldChunkInfo)
             TerrainVertex v {
                 glm::vec2(position),
                 // OpenGL texture start point is lower left
-                glm::vec2(float(j) / numVertices, float(i) / numVertices)
+                glm::vec2(float(2 * j + 1) / (2 * (numVertices + 1) ), float(2 * i + 1) / (2 * (numVertices + 1)))
             };
             vertices[k++]  = std::move(v);
         } 

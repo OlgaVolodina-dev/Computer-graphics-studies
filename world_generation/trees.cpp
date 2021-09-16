@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include "terrainGenerator.h"
+#include "Log.h"
 
 
 void Trees::Init(WorldChunkInfo const &worldChunkInfo)
@@ -46,19 +47,33 @@ void Trees::CheckUpdatedData()
 
 void Trees::GetTreesPosition(WorldChunkInfo const &worldChunkInfo, std::vector<glm::vec3> &positions)
 {
-    int xMin, xMax, zMin, zMax;
-    worldChunkInfo.GetBoundingBox(xMin, zMin, xMax, zMax);
-    
-    for (int x = xMin; x < xMax; ++x) {
-        for (int z = zMin; z < zMax; ++z){
-            if (TerrainGenerator::GetBiome(x, z) == TerrainGenerator::BIOME::FOREST) {
+    int k = 0;
+    for (int i = 0; i <= worldChunkInfo.numVertices_; ++i) {
+        for (int j  = 0; j <= worldChunkInfo.numVertices_; ++j) {
+            float x = worldChunkInfo.xBoundary.first + float(i) / worldChunkInfo.numVertices_ * worldChunkInfo.size;
+            float z = worldChunkInfo.zBoundary.first + float(j) / worldChunkInfo.numVertices_ * worldChunkInfo.size;
+            if (worldChunkInfo.biomeMap_[k] == static_cast<uint8_t>(TerrainGenerator::BIOME::FOREST)) {
                 float n = dist(generator);
-                if (abs(n) > 6.0) {
-                    positions.push_back(glm::vec3(x, TerrainGenerator::GetHeight(x, z) + 1.5F, z));
+                if (abs(n) > 5.0) {
+                    positions.push_back(glm::vec3(x, worldChunkInfo.terrainHeightMap_[k] + 1.5F, z));
                 }
-            } 
+            }
+            k++; 
         }
     }
+    Log::Debug("{}", positions.size());
+    // int xMin, xMax, zMin, zMax;
+    // worldChunkInfo.GetBoundingBox(xMin, zMin, xMax, zMax);
+    // for (int x = xMin; x < xMax; ++x) {
+    //     for (int z = zMin; z < zMax; ++z){
+    //         if (TerrainGenerator::GetBiome(x, z) == TerrainGenerator::BIOME::FOREST) {
+    //             float n = dist(generator);
+    //             if (abs(n) > 6.0) {
+    //                 positions.push_back(glm::vec3(x, TerrainGenerator::GetHeight(x, z) + 1.5F, z));
+    //             }
+    //         } 
+    //     }
+    // }
     
 } 
 

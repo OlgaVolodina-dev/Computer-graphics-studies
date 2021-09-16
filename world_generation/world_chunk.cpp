@@ -9,6 +9,7 @@ void WorldChunk::Init(unsigned int numVertices, std::pair<int, int> gridNumber)
     worldChunkInfo.numVertices_ = numVertices; 
     worldChunkInfo.xBoundary = {gridNumber.first * size, (gridNumber.first + 1) * size};
     worldChunkInfo.zBoundary = {gridNumber.second * size, (gridNumber.second + 1) * size};
+    worldChunkInfo.gridNumber_ = gridNumber;
     GenerateBiomeMap();
     GenerateHeightMap();
     terrain.Init(worldChunkInfo);
@@ -35,6 +36,7 @@ void WorldChunk::GenerateBiomeMap()
 void WorldChunk::GenerateHeightMap()
 {
     auto &numVertices = worldChunkInfo.numVertices_;
+    
     auto &xBoundary =  worldChunkInfo.xBoundary;
     auto &zBoundary =  worldChunkInfo.zBoundary;
     auto &size = worldChunkInfo.size;
@@ -55,6 +57,10 @@ void WorldChunk::GenerateHeightMap()
 
 void WorldChunk::UpdateInThread(std::pair<int, int> gridNumber)
 {
+    auto &size = worldChunkInfo.size;
+    worldChunkInfo.gridNumber_ = gridNumber;
+    worldChunkInfo.xBoundary = {gridNumber.first * size, (gridNumber.first + 1) * size};
+    worldChunkInfo.zBoundary = {gridNumber.second * size, (gridNumber.second + 1) * size};
     GenerateBiomeMap();
     GenerateHeightMap();
     terrain.Update(worldChunkInfo);
@@ -71,7 +77,7 @@ void WorldChunk::CheckUpdatedData() {
         t.join();
         updateDone = false;
         terrain.CheckUpdatedData(worldChunkInfo);
-        tree.CheckUpdatedData();
+       tree.CheckUpdatedData();
     }
 }
 
